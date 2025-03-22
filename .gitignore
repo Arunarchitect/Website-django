@@ -12,7 +12,7 @@ __pycache__
 *.py[cod]
 
 # Virtual Environment
-venv/
+myenv/
 env/
 
 # Docker

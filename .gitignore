@@ -1,0 +1,31 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Django stuff:
+*.log
+*.pot
+*.py[cod]
+
+# Virtual Environment
+venv/
+env/
+
+# Docker
+docker-compose.yml
+Dockerfile
+
+# IDE Files
+.idea/
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Local Django settings
+local_settings.py

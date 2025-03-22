@@ -15,9 +15,6 @@ __pycache__
 myenv/
 env/
 
-# Docker
-docker-compose.yml
-Dockerfile
 
 # IDE Files
 .idea/

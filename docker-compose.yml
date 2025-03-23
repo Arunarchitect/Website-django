@@ -1,29 +1,19 @@
-
 services:
-
-  db:
-    image: postgres:13
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
-      
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn webdjango.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
+      - ./staticfiles:/app/staticfiles  # Mount the staticfiles directory to container
     ports:
       - "8000:8000"
-    depends_on:
-      - db
     environment:
-      - DEBUG=1
+      - DEBUG=0
       - PYTHONUNBUFFERED=1
+    networks:
+      - my_network
+    restart: always
 
-  
-
-volumes:
-  postgres_data:
+networks:
+  my_network:
+    driver: bridge

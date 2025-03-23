@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)6)cx)4@!f!bbf56_z7ig+lgok(s(5^qm&gk7$ki_fuo^y%lt8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -126,3 +126,26 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+
+# settings.py
+
+# URL to serve static files
+STATIC_URL = '/static/'
+
+# Directory where static files will be collected in production
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Use an absolute path for static files
+
+# During development, you may want to set this
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Add additional static directories if needed
+]
+
+# Media files (user-uploaded files)
+# The URL that serves media files
+MEDIA_URL = '/media/'
+
+# The directory where media files will be stored
+# Use an absolute path for MEDIA_ROOT
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # example path

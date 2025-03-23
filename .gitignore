@@ -15,6 +15,10 @@ __pycache__
 myenv/
 env/
 
+# Static and Media directories
+/static/
+/media/
+/staticfiles/
 
 # IDE Files
 .idea/

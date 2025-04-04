@@ -22,6 +22,7 @@ from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
+    path('', lambda request: HttpResponse("It works!"), name='home'),  # Root page
     path('admin/', admin.site.urls),
 ]
 

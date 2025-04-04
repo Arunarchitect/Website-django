@@ -131,15 +131,14 @@ import os
 
 # settings.py
 
-# URL to serve static files
 STATIC_URL = '/static/'
 
-# Directory where static files will be collected in production
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Use an absolute path for static files
+# STATIC_ROOT is for collectstatic (where all static files get copied to for production)
+STATIC_ROOT = '/var/www/modelflick/static'
 
-# During development, you may want to set this
+# STATICFILES_DIRS are source folders where your static files live (for dev)
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Add additional static directories if needed
+    BASE_DIR / 'static',  # Your actual static files (JS, CSS, images, etc.)
 ]
 
 # Media files (user-uploaded files)

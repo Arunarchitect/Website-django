@@ -1,0 +1,17 @@
+Step-by-step Fix:
+1. Create a new static directory
+bash
+Copy
+Edit
+sudo mkdir -p /var/www/modelflick/static
+2. Copy your static files
+bash
+Copy
+Edit
+sudo cp -r /root/Website-django/staticfiles/* /var/www/modelflick/static/
+3. Set permissions
+bash
+Copy
+Edit
+sudo chown -R www-data:www-data /var/www/modelflick/static
+sudo chmod -R 755 /var/www/modelflick/static

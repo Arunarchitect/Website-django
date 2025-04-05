@@ -47,11 +47,13 @@ INSTALLED_APPS = [
 
     #packages
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # must be high up
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -158,3 +160,12 @@ MEDIA_URL = '/media/'
 # The directory where media files will be stored
 # Use an absolute path for MEDIA_ROOT
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # example path
+
+
+CORS_ALLOWED_ORIGINS = [
+    "https://modelflick.com",  # your frontend domain
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+

@@ -164,6 +164,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # example path
 
 CORS_ALLOWED_ORIGINS = [
     "https://modelflick.com",  # your frontend domain
+    "https://www.modelflick.com",  # your frontend domain
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]

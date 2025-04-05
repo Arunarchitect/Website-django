@@ -1,0 +1,17 @@
+# docker-compose.dev.yml
+
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app  # live code reloading
+    environment:
+      - DEBUG=1
+
+# for development docker compose use this command - docker-compose -f docker-compose.dev.yml up --build

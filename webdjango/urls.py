@@ -19,11 +19,16 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.http import HttpResponse
+
+
+
 
 urlpatterns = [
-    path('', lambda request: HttpResponse("It works!"), name='home'),  # Root page
+    path('', lambda requedeactst: HttpResponse("It works!"), name='home'),  # Root page
     path('admin/', admin.site.urls),
+    path('api/', include('fees.urls')),  # This adds the endpoint at /api/fee/
 ]
 
 if settings.DEBUG:

@@ -29,6 +29,7 @@ urlpatterns = [
     path('', lambda requedeactst: HttpResponse("It works!"), name='home'),  # Root page
     path('admin/', admin.site.urls),
     path('api/', include('fees.urls')),  # This adds the endpoint at /api/fee/
+    path('projects/', include('projects.urls')), 
 ]
 
 if settings.DEBUG:

@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('fees.urls')),  # This adds the endpoint at /api/fee/
     path('projects/', include('projects.urls')), 
+    # path('expenses/', include('expense.urls')),
 ]
 
 if settings.DEBUG:

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     #apps
     'fees',
     'projects',
+    'expense',
 
     #packages
     'rest_framework',

@@ -2,9 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Project(models.Model):
+    STAGE_CHOICES = [
+        ('1', 'Stage 1'),
+        ('2', 'Stage 2'),
+        ('3', 'Stage 3'),
+        ('4', 'Stage 4'),
+        ('5', 'Stage 5'),
+    ]
+
     name = models.CharField("Project Name", max_length=255)
     location = models.CharField("Location", max_length=255)
     client_name = models.CharField("Client Name", max_length=255)
+    current_stage = models.CharField("Current Stage", max_length=1, choices=STAGE_CHOICES, default='1')
 
     class Meta:
         verbose_name = "Project"
@@ -12,6 +21,7 @@ class Project(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.client_name})"
+
 
 class WorkType(models.Model):
     name = models.CharField("Work Type", max_length=100)
@@ -22,6 +32,7 @@ class WorkType(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class WorkLog(models.Model):
     employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
@@ -42,3 +53,30 @@ class WorkLog(models.Model):
         if self.end_time and self.start_time:
             return self.end_time - self.start_time
         return None
+
+
+class Deliverable(models.Model):
+    STATUS_CHOICES = [
+        ('not_started', 'Not Started'),
+        ('ongoing', 'Ongoing'),
+        ('ready', 'Ready for Validation'),
+        ('passed', 'Passed Validation'),
+        ('failed', 'Failed Validation'),
+        ('discrepancy', 'Site Discrepancy'),
+    ]
+
+    STAGE_CHOICES = Project.STAGE_CHOICES
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='deliverables')
+    name = models.CharField("Deliverable Name", max_length=255)
+    stage = models.CharField("Stage", max_length=1, choices=STAGE_CHOICES)
+    status = models.CharField("Status", max_length=20, choices=STATUS_CHOICES, default='not_started')
+    remarks = models.TextField("Remarks", blank=True, null=True)  # 🔥 new field
+
+    class Meta:
+        verbose_name = "Deliverable"
+        verbose_name_plural = "Deliverables"
+        unique_together = ('project', 'name', 'stage')
+
+    def __str__(self):
+        return f"{self.project.name} - {self.name} (Stage {self.stage}) - {self.get_status_display()}"

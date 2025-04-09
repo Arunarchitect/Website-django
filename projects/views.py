@@ -5,7 +5,6 @@ from rest_framework import viewsets
 from .models import Project, WorkLog, WorkType, Deliverable
 from .serializers import ProjectSerializer, WorkLogSerializer, WorkTypeSerializer, DeliverableSerializer
 
-
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -26,7 +25,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         )
 
-        deliverables = project.deliverables.values('name', 'stage', 'status', 'remarks')
+        deliverables = project.deliverables.values(
+            'work_type__name', 'stage', 'status', 'remarks'
+        )
 
         return Response({
             'project': project.name,
@@ -39,7 +40,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 }
                 for w in work_summary
             ],
-            'deliverables': list(deliverables)
+            'deliverables': [
+                {
+                    'name': d['work_type__name'],
+                    'stage': d['stage'],
+                    'status': d['status'],
+                    'remarks': d['remarks']
+                }
+                for d in deliverables
+            ]
         })
 
 

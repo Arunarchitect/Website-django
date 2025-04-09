@@ -68,15 +68,19 @@ class Deliverable(models.Model):
     STAGE_CHOICES = Project.STAGE_CHOICES
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='deliverables')
-    name = models.CharField("Deliverable Name", max_length=255)
+    work_type = models.ForeignKey(WorkType, verbose_name="Deliverable Name", on_delete=models.CASCADE)
     stage = models.CharField("Stage", max_length=1, choices=STAGE_CHOICES)
     status = models.CharField("Status", max_length=20, choices=STATUS_CHOICES, default='not_started')
-    remarks = models.TextField("Remarks", blank=True, null=True)  # 🔥 new field
+    remarks = models.TextField("Remarks", blank=True, null=True)
 
     class Meta:
         verbose_name = "Deliverable"
         verbose_name_plural = "Deliverables"
-        unique_together = ('project', 'name', 'stage')
+        unique_together = ('project', 'work_type', 'stage')  # updated to use work_type
 
     def __str__(self):
         return f"{self.project.name} - {self.name} (Stage {self.stage}) - {self.get_status_display()}"
+
+    @property
+    def name(self):
+        return self.work_type.name

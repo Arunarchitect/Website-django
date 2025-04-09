@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Expense, Category, Item, Brand, Shop
 
-# --- Nested serializers for display ---
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -28,16 +27,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username']
 
-# --- Main Expense serializer ---
 class ExpenseSerializer(serializers.ModelSerializer):
-    # Read-only nested representations (for GET)
+    # Read-only for nested display
     item = ItemSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
     brand = BrandSerializer(read_only=True)
     shop = ShopSerializer(read_only=True)
     who_spent = UserSerializer(read_only=True)
 
-    # Write-only fields (for POST/PUT/PATCH)
+    # Write-only input fields
     item_id = serializers.PrimaryKeyRelatedField(
         queryset=Item.objects.all(), source='item', write_only=True
     )
@@ -53,6 +51,8 @@ class ExpenseSerializer(serializers.ModelSerializer):
     who_spent_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), source='who_spent', write_only=True
     )
+
+    rate = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Expense
@@ -70,3 +70,30 @@ class ExpenseSerializer(serializers.ModelSerializer):
             'rate',
             'remarks',
         ]
+
+    def validate_quantity(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Quantity must be greater than 0.")
+        return value
+
+    def validate(self, data):
+        errors = {}
+
+        if not data.get('item'):
+            errors['item_id'] = 'Item must not be empty.'
+
+        if not data.get('category'):
+            errors['category_id'] = 'Category must not be empty.'
+
+        if not data.get('who_spent'):
+            errors['who_spent_id'] = 'who_spent must be a valid user.'
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return data
+
+    def create(self, validated_data):
+        if not validated_data.get('remarks'):
+            validated_data['remarks'] = "N.A"
+        return super().create(validated_data)

@@ -30,3 +30,4 @@ Thumbs.db
 
 # Local Django settings
 local_settings.py
+.env

@@ -1,11 +1,18 @@
 services:
   web:
     build: .
-    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn webdjango.wsgi:application --bind unix:/tmp/gunicorn.sock"
+    command: >
+      bash -c "
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn webdjango.wsgi:application --bind unix:/tmp/gunicorn.sock
+      "
     volumes:
       - .:/app
-      - /var/www/modelflick/static:/var/www/modelflick/static  # ✅ Mount the static dir Nginx serves
-      - /tmp:/tmp  # ✅ Share the full /tmp so Nginx sees the gunicorn.sock
+      - /var/www/modelflick/static:/var/www/modelflick/static
+      - /tmp:/tmp
+    env_file:
+      - .env
     environment:
       - DEBUG=0
       - PYTHONUNBUFFERED=1

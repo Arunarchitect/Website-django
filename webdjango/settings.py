@@ -20,10 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)6)cx)4@!f!bbf56_z7ig+lgok(s(5^qm&gk7$ki_fuo^y%lt8'
+import os
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# Optionally: fallback if missing (NOT recommended for production)
+if not SECRET_KEY:
+    raise Exception("SECRET_KEY is not set in environment variables!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-import os
 
 DEBUG = os.getenv('DEBUG', '0') == '1'
 
@@ -174,11 +179,11 @@ CORS_ALLOWED_ORIGINS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'users.authentication.CustomJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ],
+    ]
 }
 
 
@@ -191,5 +196,29 @@ DJOSER = {
     'TOKEN_MODEL': None,
 }
 
-
+# Custom User model
 AUTH_USER_MODEL = 'users.UserAccount'
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Make sure these are set as environment variables or replaced with actual credentials
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # Your Gmail address
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # Gmail App Password (NOT your main Gmail password)
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # This can be the same as EMAIL_HOST_USER
+
+DOMAIN = os.environ.get('DOMAIN')
+SITE_NAME = os.environ.get('SITE_NAME')
+
+
+AUTH_COOKIE = 'access'
+AUTH_COOKIE_MAX_AGE = 60 * 60 * 24
+AUTH_COOKIE_SECURE = os.environ.get('AUTH_COOKIE_SECURE', 'True') == 'True'
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/'
+AUTH_COOKIE_SAMESITE = 'None'

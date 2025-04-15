@@ -28,9 +28,11 @@ from django.http import HttpResponse
 urlpatterns = [
     path('', lambda requedeactst: HttpResponse("It works!"), name='home'),  # Root page
     path('admin/', admin.site.urls),
-    path('api/', include('fees.urls')),  # This adds the endpoint at /api/fee/
+    path('fees/', include('fees.urls')),  # This adds the endpoint at /api/fee/
     path('projects/', include('projects.urls')), 
     path('expenses/', include('expense.urls')),
+    path('api/', include('djoser.urls')),
+    path('api/', include('users.urls')),
 ]
 
 if settings.DEBUG:

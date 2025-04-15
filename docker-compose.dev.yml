@@ -6,8 +6,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app  # live code reloading
-    environment:
-      - DEBUG=1
+      - .:/app
+    env_file:
+      - .env  # ✅ this is the key part
+
 
 # for development docker compose use this command - docker-compose -f docker-compose.dev.yml up --build

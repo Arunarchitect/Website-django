@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model  # Import get_user_model()
 
 class Project(models.Model):
     STAGE_CHOICES = [
@@ -35,7 +35,7 @@ class WorkType(models.Model):
 
 
 class WorkLog(models.Model):
-    employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
+    employee = models.ForeignKey(get_user_model(), verbose_name="Employee", on_delete=models.CASCADE)  # Use get_user_model()
     project = models.ForeignKey(Project, verbose_name="Project", on_delete=models.CASCADE)
     work_type = models.ForeignKey(WorkType, verbose_name="Work Type", on_delete=models.SET_NULL, null=True)
     start_time = models.DateTimeField("Start Time")
@@ -46,7 +46,7 @@ class WorkLog(models.Model):
         verbose_name_plural = "Work Logs"
 
     def __str__(self):
-        return f"{self.employee.username} - {self.project.name} ({self.start_time.strftime('%Y-%m-%d')})"
+        return f"{self.employee.email} - {self.project.name} ({self.start_time.strftime('%Y-%m-%d')})"
 
     @property
     def duration(self):
@@ -79,8 +79,8 @@ class Deliverable(models.Model):
         unique_together = ('project', 'work_type', 'stage')  # updated to use work_type
 
     def __str__(self):
-        return f"{self.project.name} - {self.name} (Stage {self.stage}) - {self.get_status_display()}"
+        return f"{self.project.name} - {self.work_type.name} (Stage {self.stage}) - {self.get_status_display()}"
 
     @property
     def name(self):
-        return self.work_type.name
+        return f"{self.work_type.name} - Stage {self.stage}"

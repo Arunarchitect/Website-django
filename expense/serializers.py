@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model  # Use get_user_model() for the custom user model
 from .models import Expense, Category, Item, Brand, Shop
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class ShopSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = get_user_model()  # Get the custom user model
         fields = ['id', 'username']
 
 class ExpenseSerializer(serializers.ModelSerializer):
@@ -49,7 +49,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
         queryset=Shop.objects.all(), source='shop', write_only=True, allow_null=True, required=False
     )
     who_spent_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), source='who_spent', write_only=True
+        queryset=get_user_model().objects.all(), source='who_spent', write_only=True  # Use custom user model
     )
 
     rate = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)

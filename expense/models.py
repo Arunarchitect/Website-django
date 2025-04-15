@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model  # Use get_user_model() to support custom user model
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -37,7 +37,7 @@ class Expense(models.Model):
         ('sq.m', 'Square Metre'),
     ]
 
-    who_spent = models.ForeignKey(User, on_delete=models.CASCADE)
+    who_spent = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
@@ -57,4 +57,4 @@ class Expense(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.item.name} by {self.who_spent.username} on {self.date_of_purchase}"
+        return f"{self.item.name} by {self.who_spent.email} on {self.date_of_purchase}"  # Using email instead of username

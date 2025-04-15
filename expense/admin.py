@@ -13,9 +13,6 @@ class ExpenseAdmin(admin.ModelAdmin):
         'date_of_purchase', 'quantity', 'unit', 'price', 'rate', 'remarks'
     )
     readonly_fields = ('rate',)
-    search_fields = (
-        'item__name', 'category__name', 'brand__name',
-        'shop__name', 'who_spent__username', 'remarks'
-    )
-    list_filter = ('category', 'brand', 'shop', 'unit', 'date_of_purchase')
+    # search_fields = (...)  # Temporarily comment out
+    # list_filter = (...)    # Temporarily comment out
     ordering = ('-date_of_purchase',)

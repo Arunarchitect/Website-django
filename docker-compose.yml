@@ -1,6 +1,9 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        SECRET_KEY: ${SECRET_KEY}  # This will reference the SECRET_KEY from the .env file
     command: >
       bash -c "
         python manage.py migrate &&
@@ -12,10 +15,10 @@ services:
       - /var/www/modelflick/static:/var/www/modelflick/static
       - /tmp:/tmp
     env_file:
-      - .env
+      - .env  # Ensure SECRET_KEY and other variables are loaded at runtime
     environment:
-      - DEBUG=0
       - PYTHONUNBUFFERED=1
+      # You can override environment variables here if necessary
     networks:
       - my_network
     restart: always

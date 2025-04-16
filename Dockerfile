@@ -1,9 +1,13 @@
 # Use official Python image
 FROM python:3.10-slim
 
+# Accept SECRET_KEY as a build-time argument
+ARG SECRET_KEY
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV SECRET_KEY=${SECRET_KEY}
 
 # Set working directory
 WORKDIR /app

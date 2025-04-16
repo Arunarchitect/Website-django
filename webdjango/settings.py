@@ -197,6 +197,15 @@ REST_FRAMEWORK = {
 }
 
 
+import os
+
+if os.environ.get('DEBUG') == 'True':
+    # Use development URLs
+    REDIRECT_URLS = os.environ.get('REDIRECT_URLS_DEV', '').split(',') if os.environ.get('REDIRECT_URLS_DEV') else []
+else:
+    # Use production URLs
+    REDIRECT_URLS = os.environ.get('REDIRECT_URLS_PROD', '').split(',') if os.environ.get('REDIRECT_URLS_PROD') else []
+
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
@@ -204,8 +213,10 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'TOKEN_MODEL': None,
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS':os.environ.get('REDIRECT_URLS').split(',')
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': REDIRECT_URLS,
 }
+
+
 
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_AUTH_KEY')

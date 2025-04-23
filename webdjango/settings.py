@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,8 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-import os
-
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # Optionally: fallback if missing (NOT recommended for production)
@@ -29,16 +28,12 @@ if not SECRET_KEY:
     raise Exception("SECRET_KEY is not set in environment variables!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-
 DEBUG = os.getenv('DEBUG', '0') == '1'
-
-
 
 ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,13 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #apps
+    # apps
     'fees',
     'projects',
     'expense',
     'users',
 
-    #packages
+    # packages
     'rest_framework',
     'corsheaders',
     'djoser',
@@ -94,7 +89,6 @@ WSGI_APPLICATION = 'webdjango.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -107,10 +101,8 @@ DATABASES = {
 }
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -129,28 +121,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'  # <-- changed from UTC
 USE_I18N = True
 USE_TZ = True
 
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-import os
-
-# settings.py
 
 STATIC_URL = '/static/'
 
@@ -163,7 +141,6 @@ STATICFILES_DIRS = [
 ]
 
 # Media files (user-uploaded files)
-# The URL that serves media files
 MEDIA_URL = '/media/'
 
 # The directory where media files will be stored
@@ -171,22 +148,39 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # example path
 
 
+# Add to your settings.py
+
+CORS_ALLOW_CREDENTIALS = True  # Important for credentials mode 'include'
+
 CORS_ALLOWED_ORIGINS = [
-    "https://modelflick.com",  # your frontend domain
-    "https://www.modelflick.com",  # your frontend domain
+    "https://modelflick.com",
+    "https://www.modelflick.com",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+# If you need to allow all subdomains, use this instead:
+# CORS_ALLOW_ALL_ORIGINS = True  # Only for development!
 
+# Additional headers needed
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
 
 
 REST_FRAMEWORK = {
@@ -199,15 +193,6 @@ REST_FRAMEWORK = {
 }
 
 
-import os
-
-if os.environ.get('DEBUG') == 'True':
-    # Use development URLs
-    REDIRECT_URLS = os.environ.get('REDIRECT_URLS_DEV', '').split(',') if os.environ.get('REDIRECT_URLS_DEV') else []
-else:
-    # Use production URLs
-    REDIRECT_URLS = os.environ.get('REDIRECT_URLS_PROD', '').split(',') if os.environ.get('REDIRECT_URLS_PROD') else []
-
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
@@ -215,10 +200,9 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'TOKEN_MODEL': None,
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': REDIRECT_URLS,
+    # Handle REDIRECT_URLS based on DEV or PROD environment
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.environ.get('REDIRECT_URLS_DEV') if os.getenv('DEBUG', '0') == '1' else os.environ.get('REDIRECT_URLS_PROD')
 }
-
-
 
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_AUTH_KEY')
@@ -240,7 +224,6 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 
 # Custom User model
 AUTH_USER_MODEL = 'users.UserAccount'
-
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

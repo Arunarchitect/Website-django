@@ -130,18 +130,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
-# STATIC_ROOT is for collectstatic (where all static files get copied to for production)
-STATIC_ROOT = '/var/www/modelflick/static'
+# For development - serve from collected static files
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Local path inside container
+else:
+    STATIC_ROOT = '/var/www/modelflick/static'  # Production path
 
-# STATICFILES_DIRS are source folders where your static files live (for dev)
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Your actual static files (JS, CSS, images, etc.)
+    os.path.join(BASE_DIR, 'static'),
+    # Add path to Django admin static files in development
+    os.path.join(BASE_DIR, 'webdjango/static'),
 ]
 
-# Media files (user-uploaded files)
+# Media files
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # The directory where media files will be stored
 # Use an absolute path for MEDIA_ROOT

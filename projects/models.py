@@ -72,11 +72,13 @@ class Deliverable(models.Model):
     stage = models.CharField("Stage", max_length=1, choices=STAGE_CHOICES)
     status = models.CharField("Status", max_length=20, choices=STATUS_CHOICES, default='not_started')
     remarks = models.TextField("Remarks", blank=True, null=True)
+    start_date = models.DateField("Start Date", null=True, blank=True)  # new field
+    end_date = models.DateField("End Date", null=True, blank=True)      # new field
 
     class Meta:
         verbose_name = "Deliverable"
         verbose_name_plural = "Deliverables"
-        unique_together = ('project', 'work_type', 'stage')  # updated to use work_type
+        unique_together = ('project', 'work_type', 'stage')
 
     def __str__(self):
         return f"{self.project.name} - {self.work_type.name} (Stage {self.stage}) - {self.get_status_display()}"

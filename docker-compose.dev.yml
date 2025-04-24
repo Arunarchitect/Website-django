@@ -7,8 +7,17 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     env_file:
-      - .env  # ✅ this is the key part
+      - .env
+    environment:
+      - DEBUG=1
+    command: >
+      sh -c "python manage.py collectstatic --no-input &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
 
-
-# for development docker compose use this command - docker-compose -f docker-compose.dev.yml up --build
+volumes:
+  static_volume:
+  media_volume:

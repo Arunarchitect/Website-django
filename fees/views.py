@@ -3,9 +3,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny  # ✅ Allow public access
 from .models import Fee, PromoCode
 
 class FeeWithPromoAPIView(APIView):
+    permission_classes = [AllowAny]  # ✅ Make this endpoint accessible without auth
+
     def get(self, request):
         promo_code = request.query_params.get('promo_code', '').strip()
 

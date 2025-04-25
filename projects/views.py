@@ -61,6 +61,9 @@ class WorkLogViewSet(viewsets.ModelViewSet):
     queryset = WorkLog.objects.all()
     serializer_class = WorkLogSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(employee=self.request.user)  # 👈 Set employee automatically
+
 
 class DeliverableViewSet(viewsets.ModelViewSet):
     queryset = Deliverable.objects.all()

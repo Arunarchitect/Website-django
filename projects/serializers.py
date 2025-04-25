@@ -17,14 +17,13 @@ class WorkLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkLog
         fields = '__all__'
+        read_only_fields = ['employee']  # 👈 Employee is set automatically
 
 
 class DeliverableSerializer(serializers.ModelSerializer):
-    # Reference to work_type.name as the name field
-    name = serializers.CharField(source='work_type.name', read_only=True)  # this makes name show up like before
+    name = serializers.CharField(source='work_type.name', read_only=True)
 
     class Meta:
         model = Deliverable
         fields = ['id', 'project', 'work_type', 'name', 'stage', 'status', 'remarks']
-        # Optionally, you can specify read_only=True for related fields if they shouldn't be directly modifiable
         read_only_fields = ['project', 'work_type']

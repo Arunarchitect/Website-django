@@ -1,5 +1,37 @@
 from rest_framework import serializers
-from .models import Project, WorkType, WorkLog, Deliverable
+from .models import (
+    Organisation,
+    OrganisationMembership,
+    Project,
+    WorkType,
+    WorkLog,
+    Deliverable
+)
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name']
+
+
+class OrganisationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organisation
+        fields = ['id', 'name']
+
+
+class OrganisationMembershipSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True, source='user')
+
+    class Meta:
+        model = OrganisationMembership
+        fields = ['id', 'organisation', 'user', 'user_id', 'role']
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,7 +49,7 @@ class WorkLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkLog
         fields = '__all__'
-        read_only_fields = ['employee']  # 👈 Employee is set automatically
+        read_only_fields = ['employee']
 
 
 class DeliverableSerializer(serializers.ModelSerializer):

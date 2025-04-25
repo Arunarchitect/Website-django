@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from django.db.models import Sum, F, ExpressionWrapper, DurationField
 
-from .models import Project, WorkLog, WorkType, Deliverable
-from .serializers import ProjectSerializer, WorkLogSerializer, WorkTypeSerializer, DeliverableSerializer
+from .models import Project, WorkLog, Deliverable
+from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -14,7 +14,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def summary(self, request, pk=None):
         project = self.get_object()
-        logs = WorkLog.objects.filter(project=project, end_time__isnull=False)
+
+        logs = WorkLog.objects.filter(deliverable__project=project, end_time__isnull=False)
 
         total_duration = logs.aggregate(
             duration=Sum(
@@ -22,40 +23,27 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         )['duration']
 
-        work_summary = logs.values('work_type__name').annotate(
+        work_summary = logs.values('deliverable__name').annotate(
             duration=Sum(
                 ExpressionWrapper(F('end_time') - F('start_time'), output_field=DurationField())
             )
         )
 
-        deliverables = project.deliverables.values('work_type__name', 'stage', 'status', 'remarks')
+        deliverables = project.deliverables.values('name', 'stage', 'status', 'remarks')
 
         return Response({
             'project': project.name,
             'current_stage': project.current_stage,
             'total_duration_seconds': total_duration.total_seconds() if total_duration else 0,
-            'work_types': [
+            'deliverables_summary': [
                 {
-                    'name': item['work_type__name'],
+                    'name': item['deliverable__name'],
                     'duration_seconds': item['duration'].total_seconds() if item['duration'] else 0
                 }
                 for item in work_summary
             ],
-            'deliverables': [
-                {
-                    'name': d['work_type__name'],
-                    'stage': d['stage'],
-                    'status': d['status'],
-                    'remarks': d['remarks']
-                }
-                for d in deliverables
-            ]
+            'deliverables': list(deliverables)
         })
-
-
-class WorkTypeViewSet(viewsets.ModelViewSet):
-    queryset = WorkType.objects.all()
-    serializer_class = WorkTypeSerializer
 
 
 class WorkLogViewSet(viewsets.ModelViewSet):
@@ -63,7 +51,7 @@ class WorkLogViewSet(viewsets.ModelViewSet):
     serializer_class = WorkLogSerializer
 
     def perform_create(self, serializer):
-        serializer.save(employee=self.request.user)  # Automatically sets the logged-in user
+        serializer.save(employee=self.request.user)
 
 
 class DeliverableViewSet(viewsets.ModelViewSet):

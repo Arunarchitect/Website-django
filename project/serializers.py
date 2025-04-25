@@ -3,7 +3,6 @@ from .models import (
     Organisation,
     OrganisationMembership,
     Project,
-    WorkType,
     WorkLog,
     Deliverable
 )
@@ -39,10 +38,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class WorkTypeSerializer(serializers.ModelSerializer):
+class DeliverableSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WorkType
-        fields = '__all__'
+        model = Deliverable
+        fields = ['id', 'project', 'name', 'stage', 'status', 'remarks', 'start_date', 'end_date']
 
 
 class WorkLogSerializer(serializers.ModelSerializer):
@@ -50,12 +49,3 @@ class WorkLogSerializer(serializers.ModelSerializer):
         model = WorkLog
         fields = '__all__'
         read_only_fields = ['employee']
-
-
-class DeliverableSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='work_type.name', read_only=True)
-
-    class Meta:
-        model = Deliverable
-        fields = ['id', 'project', 'work_type', 'name', 'stage', 'status', 'remarks']
-        read_only_fields = ['project', 'work_type']

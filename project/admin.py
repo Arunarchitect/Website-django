@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Project, WorkType, WorkLog, Deliverable, Organisation, OrganisationMembership
+from .models import Project, WorkLog, Deliverable, Organisation, OrganisationMembership
 
 
 @admin.register(Organisation)
@@ -22,17 +22,11 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ('current_stage', 'organisation')
 
 
-@admin.register(WorkType)
-class WorkTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    search_fields = ('name',)
-
-
 @admin.register(WorkLog)
 class WorkLogAdmin(admin.ModelAdmin):
-    list_display = ('id', 'employee', 'project', 'work_type', 'start_time', 'end_time', 'duration')
-    list_filter = ('project', 'employee', 'work_type')
-    search_fields = ('employee__username', 'employee__email', 'project__name')
+    list_display = ('id', 'employee', 'project', 'deliverable', 'start_time', 'end_time', 'duration')
+    list_filter = ('project', 'employee', 'deliverable')
+    search_fields = ('employee__username', 'employee__email', 'project__name', 'deliverable__name')
 
     def duration(self, obj):
         return obj.duration
@@ -42,4 +36,4 @@ class WorkLogAdmin(admin.ModelAdmin):
 class DeliverableAdmin(admin.ModelAdmin):
     list_display = ('id', 'project', 'name', 'stage', 'status', 'remarks')
     list_filter = ('project', 'stage', 'status')
-    search_fields = ('project__name', 'remarks')
+    search_fields = ('project__name', 'name', 'remarks')

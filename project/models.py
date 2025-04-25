@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Organisation(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
@@ -60,38 +61,6 @@ class Project(models.Model):
         return f"{self.name} ({self.client_name})"
 
 
-class WorkType(models.Model):
-    name = models.CharField("Work Type", max_length=100)
-
-    class Meta:
-        verbose_name = "Work Type"
-        verbose_name_plural = "Work Types"
-
-    def __str__(self):
-        return self.name
-
-
-class WorkLog(models.Model):
-    employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, verbose_name="Project", on_delete=models.CASCADE)
-    work_type = models.ForeignKey(WorkType, verbose_name="Work Type", on_delete=models.SET_NULL, null=True)
-    start_time = models.DateTimeField("Start Time")
-    end_time = models.DateTimeField("End Time", null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Work Log"
-        verbose_name_plural = "Work Logs"
-
-    def __str__(self):
-        return f"{self.employee.email} - {self.project.name} ({self.start_time.strftime('%Y-%m-%d')})"
-
-    @property
-    def duration(self):
-        if self.end_time and self.start_time:
-            return self.end_time - self.start_time
-        return None
-
-
 class Deliverable(models.Model):
     STATUS_CHOICES = [
         ('not_started', 'Not Started'),
@@ -105,7 +74,7 @@ class Deliverable(models.Model):
     STAGE_CHOICES = Project.STAGE_CHOICES
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='deliverables')
-    work_type = models.ForeignKey(WorkType, verbose_name="Deliverable Name", on_delete=models.CASCADE)
+    name = models.CharField("Deliverable Name", max_length=255)
     stage = models.CharField("Stage", max_length=1, choices=STAGE_CHOICES)
     status = models.CharField("Status", max_length=20, choices=STATUS_CHOICES, default='not_started')
     remarks = models.TextField("Remarks", blank=True, null=True)
@@ -115,11 +84,33 @@ class Deliverable(models.Model):
     class Meta:
         verbose_name = "Deliverable"
         verbose_name_plural = "Deliverables"
-        unique_together = ('project', 'work_type', 'stage')
+        unique_together = ('project', 'name', 'stage')
 
     def __str__(self):
-        return f"{self.project.name} - {self.work_type.name} (Stage {self.stage}) - {self.get_status_display()}"
+        return f"{self.project.name} - {self.name} (Stage {self.stage}) - {self.get_status_display()}"
 
     @property
-    def name(self):
-        return f"{self.work_type.name} - Stage {self.stage}"
+    def stage_name(self):
+        return dict(self.STAGE_CHOICES).get(self.stage)
+
+
+class WorkLog(models.Model):
+    employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, verbose_name="Project", on_delete=models.CASCADE)
+    deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.PROTECT)
+    start_time = models.DateTimeField("Start Time")
+    end_time = models.DateTimeField("End Time", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Work Log"
+        verbose_name_plural = "Work Logs"
+
+    def __str__(self):
+        return f"{self.employee.email} - {self.project.name} ({self.start_time.strftime('%Y-%m-%d')})"
+
+    @property
+    def duration(self):
+        if self.end_time and self.start_time:
+            delta = self.end_time - self.start_time
+            return delta.total_seconds()  # or you could return it in hours/minutes
+        return None

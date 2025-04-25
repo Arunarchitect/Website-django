@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 
     # apps
     'fees',
-    'projects',
+    'project',
     'expense',
     'users',
 

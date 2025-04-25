@@ -1,29 +1,15 @@
-"""
-URL configuration for webdjango project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
-
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
+from rest_framework.routers import DefaultRouter
+from .views import ProjectViewSet, WorkTypeViewSet, WorkLogViewSet, DeliverableViewSet
 
-
-
+router = DefaultRouter()
+router.register(r'projects', ProjectViewSet)
+router.register(r'work-types', WorkTypeViewSet)
+router.register(r'work-logs', WorkLogViewSet)
+router.register(r'deliverables', DeliverableViewSet)
 
 urlpatterns = [
     path('', lambda request: HttpResponse("It works!"), name='home'),  # Root page
@@ -35,6 +21,9 @@ urlpatterns = [
     path('api/', include('djoser.urls')),  # This adds the API routes for djoser
     path('api/', include('users.urls')),   # This adds the API routes for users
     path('api/', include('projects.urls')),  # This adds the API routes for projects under /api/projects/
+
+    # Include the router URLs for the new views
+    path('api/', include(router.urls)),  # This adds the API endpoints for projects, work types, work logs, deliverables
 ]
 
 if settings.DEBUG:

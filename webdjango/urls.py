@@ -26,13 +26,15 @@ from django.http import HttpResponse
 
 
 urlpatterns = [
-    path('', lambda requedeactst: HttpResponse("It works!"), name='home'),  # Root page
+    path('', lambda request: HttpResponse("It works!"), name='home'),  # Root page
     path('admin/', admin.site.urls),
-    path('fees/', include('fees.urls')),  # This adds the endpoint at /api/fee/
-    path('projects/', include('projects.urls')), 
-    path('expenses/', include('expense.urls')),
-    path('api/', include('djoser.urls')),
-    path('api/', include('users.urls')),
+    path('fees/', include('fees.urls')),  # This adds the endpoint at /fees/
+    path('expenses/', include('expense.urls')),  # This adds the endpoint at /expenses/
+    
+    # Add /api/ prefix for your API-related endpoints
+    path('api/', include('djoser.urls')),  # This adds the API routes for djoser
+    path('api/', include('users.urls')),   # This adds the API routes for users
+    path('api/', include('projects.urls')),  # This adds the API routes for projects under /api/projects/
 ]
 
 if settings.DEBUG:

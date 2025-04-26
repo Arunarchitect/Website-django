@@ -24,8 +24,8 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(WorkLog)
 class WorkLogAdmin(admin.ModelAdmin):
-    list_display = ('id', 'employee', 'project', 'deliverable', 'start_time', 'end_time', 'duration')
-    list_filter = ('project', 'employee', 'deliverable')
+    list_display = ('id', 'employee',  'deliverable', 'start_time', 'end_time', 'duration')
+    list_filter = ( 'employee', 'deliverable')
     search_fields = ('employee__username', 'employee__email', 'project__name', 'deliverable__name')
 
     def duration(self, obj):

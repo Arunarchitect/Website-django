@@ -96,8 +96,7 @@ class Deliverable(models.Model):
 
 class WorkLog(models.Model):
     employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, verbose_name="Project", on_delete=models.CASCADE)
-    deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.PROTECT)
+    deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.CASCADE)
     start_time = models.DateTimeField("Start Time")
     end_time = models.DateTimeField("End Time", null=True, blank=True)
 
@@ -106,11 +105,17 @@ class WorkLog(models.Model):
         verbose_name_plural = "Work Logs"
 
     def __str__(self):
-        return f"{self.employee.email} - {self.project.name} ({self.start_time.strftime('%Y-%m-%d')})"
+        deliverable_name = self.deliverable.name if self.deliverable else "No Deliverable"
+        return f"{self.employee.email} - {deliverable_name} ({self.start_time.strftime('%Y-%m-%d')})"
 
     @property
     def duration(self):
         if self.end_time and self.start_time:
             delta = self.end_time - self.start_time
-            return delta.total_seconds()  # or you could return it in hours/minutes
+            return delta.total_seconds()
         return None
+
+    @property
+    def project(self):
+        """Access the project via deliverable"""
+        return self.deliverable.project if self.deliverable else None

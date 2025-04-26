@@ -45,7 +45,12 @@ class DeliverableSerializer(serializers.ModelSerializer):
 
 
 class WorkLogSerializer(serializers.ModelSerializer):
+    deliverable_name = serializers.SerializerMethodField()
+
     class Meta:
         model = WorkLog
         fields = '__all__'
         read_only_fields = ['employee']
+
+    def get_deliverable_name(self, obj):
+        return obj.deliverable.name if obj.deliverable else None

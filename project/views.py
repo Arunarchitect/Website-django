@@ -78,15 +78,16 @@ class WorkLogViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = 'attachment; filename="worklogs.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Employee', 'Deliverable', 'Start Time', 'End Time', 'Remarks'])
+        writer.writerow(['Employee', 'Project', 'Deliverable', 'Start Time', 'End Time', 'Duration'])
 
         for log in logs:
             writer.writerow([
-                log.employee.username if log.employee else '',
+                log.employee.email if log.employee else '',
+                log.deliverable.project.name if log.deliverable and log.deliverable.project else '',
                 log.deliverable.name if log.deliverable else '',
                 log.start_time,
                 log.end_time,
-                log.remarks,
+                log.duration,
             ])
 
         return response

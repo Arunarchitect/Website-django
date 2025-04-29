@@ -6,7 +6,22 @@ from django.http import HttpResponse
 import csv
 
 from .models import Project, WorkLog, Deliverable
-from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer
+from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer, OrganisationMembershipSerializer
+# views.py
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from .models import OrganisationMembership
+
+class MyMembershipsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        memberships = OrganisationMembership.objects.filter(user=request.user)
+        serializer = OrganisationMembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
+
+
+
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

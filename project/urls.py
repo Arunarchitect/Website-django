@@ -5,6 +5,7 @@ from .views import (
     ProjectViewSet,
     WorkLogViewSet,
     DeliverableViewSet,
+    MyMembershipsView,  # Importing the view
 )
 
 router = DefaultRouter()
@@ -14,4 +15,5 @@ router.register(r'deliverables', DeliverableViewSet, basename='deliverable')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('my-memberships/', MyMembershipsView.as_view(), name='my-memberships'),  # Add custom view
 ]

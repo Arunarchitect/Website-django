@@ -1,16 +1,21 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from django.db.models import Sum, F, ExpressionWrapper, DurationField
 from django.http import HttpResponse
 import csv
+from io import TextIOWrapper
+from datetime import datetime
+from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from .models import Project, WorkLog, Deliverable
 from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer, OrganisationMembershipSerializer
-# views.py
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import OrganisationMembership
+
+User = get_user_model()
 
 class MyMembershipsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -20,10 +25,6 @@ class MyMembershipsView(APIView):
         serializer = OrganisationMembershipSerializer(memberships, many=True)
         return Response(serializer.data)
 
-
-
-
-
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -31,7 +32,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def summary(self, request, pk=None):
         project = self.get_object()
-
         logs = WorkLog.objects.filter(deliverable__project=project, end_time__isnull=False)
 
         total_duration = logs.aggregate(
@@ -62,7 +62,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
             'deliverables': list(deliverables)
         })
 
-
 class WorkLogViewSet(viewsets.ModelViewSet):
     queryset = WorkLog.objects.all()
     serializer_class = WorkLogSerializer
@@ -70,7 +69,7 @@ class WorkLogViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(employee=self.request.user)
 
-    @action(detail=False, methods=['get'], url_path='download-csv')
+    @action(detail=False, methods=['get'])
     def download_csv(self, request):
         logs = self.get_queryset()
 
@@ -78,7 +77,7 @@ class WorkLogViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = 'attachment; filename="worklogs.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Employee', 'Project', 'Deliverable', 'Start Time', 'End Time', 'Duration'])
+        writer.writerow(['Employee', 'Project', 'Deliverable', 'Start Time', 'End Time'])
 
         for log in logs:
             writer.writerow([
@@ -87,17 +86,119 @@ class WorkLogViewSet(viewsets.ModelViewSet):
                 log.deliverable.name if log.deliverable else '',
                 log.start_time,
                 log.end_time,
-                log.duration,
             ])
 
         return response
 
+    @action(detail=False, methods=['post'])
+    def upload_csv(self, request):
+        # Check file size (e.g., max 5MB)
+        if request.FILES['file'].size > 5 * 1024 * 1024:
+            return Response({'error': 'File size exceeds the 5MB limit.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'file' not in request.FILES:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        csv_file = TextIOWrapper(request.FILES['file'].file, encoding='utf-8')
+        reader = csv.DictReader(csv_file)
+
+        required_fields = ['Employee', 'Project', 'Deliverable', 'Start Time']
+        if not all(field in reader.fieldnames for field in required_fields):
+            return Response(
+                {'error': f'CSV file must contain these columns: {", ".join(required_fields)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        created_count = 0
+        updated_count = 0
+        errors = []
+
+        with transaction.atomic():
+            for row_num, row in enumerate(reader, start=2):
+                try:
+                    employee_email = row['Employee'].strip()
+                    project_name = row['Project'].strip()
+                    deliverable_name = row['Deliverable'].strip()
+                    start_time_str = row['Start Time'].strip()
+                    end_time_str = row.get('End Time', '').strip()
+
+                    # Validate employee
+                    try:
+                        employee = User.objects.get(email=employee_email)
+                    except User.DoesNotExist:
+                        errors.append(f"Row {row_num}: Employee with email '{employee_email}' not found")
+                        continue
+
+                    # Validate project
+                    try:
+                        project = Project.objects.get(name=project_name)
+                    except Project.DoesNotExist:
+                        errors.append(f"Row {row_num}: Project '{project_name}' not found")
+                        continue
+
+                    # Get or create deliverable
+                    deliverable, _ = Deliverable.objects.get_or_create(
+                        project=project,
+                        name=deliverable_name,
+                        defaults={'stage': project.current_stage, 'status': 'ongoing'}
+                    )
+
+                    # Parse timestamps
+                    try:
+                        start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S%z')
+                    except ValueError:
+                        try:
+                            start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
+                        except ValueError:
+                            errors.append(f"Row {row_num}: Invalid Start Time format. Use 'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD HH:MM:SS+TZ'")
+                            continue
+
+                    end_time = None
+                    if end_time_str:
+                        try:
+                            end_time = datetime.strptime(end_time_str, '%Y-%m-%d %H:%M:%S%z')
+                        except ValueError:
+                            try:
+                                end_time = datetime.strptime(end_time_str, '%Y-%m-%d %H:%M:%S')
+                            except ValueError:
+                                errors.append(f"Row {row_num}: Invalid End Time format. Use 'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD HH:MM:SS+TZ'")
+                                continue
+
+                    # Create or update worklog
+                    _, created = WorkLog.objects.update_or_create(
+                        employee=employee,
+                        deliverable=deliverable,
+                        start_time=start_time,
+                        defaults={'end_time': end_time}
+                    )
+
+                    if created:
+                        created_count += 1
+                    else:
+                        updated_count += 1
+
+                except Exception as e:
+                    errors.append(f"Row {row_num}: {str(e)}")
+                    continue
+
+        response_data = {
+            'message': 'CSV import completed',
+            'created': created_count,
+            'updated': updated_count,
+        }
+
+        if errors:
+            response_data['error_count'] = len(errors)
+            response_data['errors'] = errors
+            return Response(response_data, status=status.HTTP_207_MULTI_STATUS)
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 class DeliverableViewSet(viewsets.ModelViewSet):
     queryset = Deliverable.objects.all()
     serializer_class = DeliverableSerializer
 
-    @action(detail=False, methods=['get'], url_path='download-csv')
+    @action(detail=False, methods=['get'])
     def download_csv(self, request):
         deliverables = self.get_queryset()
 
@@ -105,7 +206,7 @@ class DeliverableViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = 'attachment; filename="deliverables.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Project', 'Name', 'Stage', 'Status', 'Remarks'])
+        writer.writerow(['Project', 'Name', 'Stage', 'Status', 'Remarks', 'Start Date', 'End Date'])
 
         for deliverable in deliverables:
             writer.writerow([
@@ -114,6 +215,86 @@ class DeliverableViewSet(viewsets.ModelViewSet):
                 deliverable.stage,
                 deliverable.status,
                 deliverable.remarks,
+                deliverable.start_date.strftime('%Y-%m-%d') if deliverable.start_date else '',
+                deliverable.end_date.strftime('%Y-%m-%d') if deliverable.end_date else '',
             ])
 
         return response
+
+    @action(detail=False, methods=['post'])
+    def upload_csv(self, request):
+        # Check file size (e.g., max 5MB)
+        if request.FILES['file'].size > 5 * 1024 * 1024:
+            return Response({'error': 'File size exceeds the 5MB limit.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if 'file' not in request.FILES:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        csv_file = TextIOWrapper(request.FILES['file'].file, encoding='utf-8')
+        reader = csv.DictReader(csv_file)
+
+        required_fields = ['Project', 'Name', 'Stage']
+        if not all(field in reader.fieldnames for field in required_fields):
+            return Response(
+                {'error': f'CSV file must contain these columns: {", ".join(required_fields)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        created_count = 0
+        updated_count = 0
+        errors = []
+
+        with transaction.atomic():
+            for row_num, row in enumerate(reader, start=2):
+                try:
+                    project_name = row['Project'].strip()
+                    name = row['Name'].strip()
+                    stage = row['Stage'].strip()
+                    status_val = row.get('Status', 'not_started').strip()
+                    remarks = row.get('Remarks', '').strip()
+                    start_date_str = row.get('Start Date', '').strip()
+                    end_date_str = row.get('End Date', '').strip()
+
+                    # Validate project
+                    try:
+                        project = Project.objects.get(name=project_name)
+                    except Project.DoesNotExist:
+                        errors.append(f"Row {row_num}: Project '{project_name}' not found")
+                        continue
+
+                    # Parse dates
+                    try:
+                        start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else None
+                        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
+                    except ValueError:
+                        errors.append(f"Row {row_num}: Invalid date format. Use 'YYYY-MM-DD'")
+                        continue
+
+                    # Create or update deliverable
+                    deliverable, created = Deliverable.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={'stage': stage, 'status': status_val, 'remarks': remarks, 'start_date': start_date, 'end_date': end_date}
+                    )
+
+                    if created:
+                        created_count += 1
+                    else:
+                        updated_count += 1
+
+                except Exception as e:
+                    errors.append(f"Row {row_num}: {str(e)}")
+                    continue
+
+        response_data = {
+            'message': 'CSV import completed',
+            'created': created_count,
+            'updated': updated_count,
+        }
+
+        if errors:
+            response_data['error_count'] = len(errors)
+            response_data['errors'] = errors
+            return Response(response_data, status=status.HTTP_207_MULTI_STATUS)
+
+        return Response(response_data, status=status.HTTP_201_CREATED)

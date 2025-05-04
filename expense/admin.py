@@ -1,8 +1,29 @@
 from django.contrib import admin
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
+from django.utils.translation import gettext_lazy as _
+import datetime
 from .models import Expense, Item, Category, Brand, Shop
 
+# Custom Month Filter
+class MonthFilter(admin.SimpleListFilter):
+    title = _('month')
+    parameter_name = 'month'
+
+    def lookups(self, request, model_admin):
+        months = Expense.objects.dates('date_of_purchase', 'month', order='DESC')
+        return [(month.strftime("%Y-%m"), month.strftime("%B %Y")) for month in months]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            year, month = self.value().split('-')
+            return queryset.filter(
+                date_of_purchase__year=year,
+                date_of_purchase__month=month
+            )
+        return queryset
+
+# Admin for Expense
 class ExpenseAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'who_spent', 'item', 'category', 'brand', 'shop',
@@ -11,7 +32,8 @@ class ExpenseAdmin(admin.ModelAdmin):
     readonly_fields = ('rate',)
     ordering = ('-date_of_purchase',)
     list_per_page = 50
-    change_list_template = 'admin/expense/expense/change_list.html'  # Custom template
+    change_list_template = 'admin/expense/expense/change_list.html'
+    list_filter = (MonthFilter,)  # 👈 Added Month filter here
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(request, extra_context)
@@ -43,14 +65,14 @@ class ExpenseAdmin(admin.ModelAdmin):
                 total = entry['total']
                 monthly_summary_dict.setdefault(month, []).append(f"{user}: ₹{total:.2f}")
 
-            # Add the total for each month (sum of all user totals)
+            # Add the total for each month
             monthly_totals_summary = []
             for month, user_totals in monthly_summary_dict.items():
                 monthly_total = sum(float(total.split('₹')[1].strip()) for total in user_totals)
                 monthly_summary = f"{month} → " + ", ".join(user_totals) + f" | Total: ₹{monthly_total:.2f}"
                 monthly_totals_summary.append(monthly_summary)
 
-            # HTML Table Layout for Monthly Summary (first part)
+            # HTML Table Layout for Monthly Summary
             table_content = f"""
                 <h3>Monthly Summary</h3>
                 <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
@@ -79,7 +101,7 @@ class ExpenseAdmin(admin.ModelAdmin):
 
             table_content += "</tbody></table>"
 
-            # Now, add the Userwise Grand Total (second part)
+            # Add the Userwise Grand Total
             table_content += f"""
                 <h3>Userwise Grand Total</h3>
                 <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
@@ -92,7 +114,6 @@ class ExpenseAdmin(admin.ModelAdmin):
                     <tbody>
             """
 
-            # Add userwise totals to table
             for entry in grand_total_by_user:
                 table_content += f"""
                     <tr>
@@ -103,7 +124,7 @@ class ExpenseAdmin(admin.ModelAdmin):
 
             table_content += "</tbody></table>"
 
-            # Add Grand Total
+            # Add the Grand Total
             table_content += f"""
                 <h3>Grand Total</h3>
                 <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
@@ -130,7 +151,6 @@ class ExpenseAdmin(admin.ModelAdmin):
             pass
 
         return response
-
 
 # Register all models
 admin.site.register(Expense, ExpenseAdmin)

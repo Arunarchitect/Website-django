@@ -28,3 +28,4 @@ COPY . .
 EXPOSE 8000
 
 # CMD will be provided by docker-compose
+# docker-compose -f docker-compose.dev.yml up --build      

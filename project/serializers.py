@@ -21,6 +21,12 @@ class OrganisationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
         fields = ['id', 'name']
+        
+class SimpleProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'location', 'client_name', 'current_stage']
+
 
 
 class OrganisationMembershipSerializer(serializers.ModelSerializer):

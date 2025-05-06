@@ -21,3 +21,5 @@ services:
 volumes:
   static_volume:
   media_volume:
+
+# docker-compose -f docker-compose.dev.yml up  --build

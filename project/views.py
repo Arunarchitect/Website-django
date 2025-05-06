@@ -13,7 +13,8 @@ from .models import Project, WorkLog, Deliverable
 from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer, OrganisationMembershipSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import OrganisationMembership
+from .models import OrganisationMembership,Organisation, Project
+from .serializers import OrganisationSerializer, SimpleProjectSerializer
 
 User = get_user_model()
 
@@ -24,6 +25,31 @@ class MyMembershipsView(APIView):
         memberships = OrganisationMembership.objects.filter(user=request.user)
         serializer = OrganisationMembershipSerializer(memberships, many=True)
         return Response(serializer.data)
+    
+    
+class OrganisationListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Get all organisations where user is a member
+        memberships = OrganisationMembership.objects.filter(user=request.user)
+        organisations = Organisation.objects.filter(memberships__in=memberships).distinct()
+        serializer = OrganisationSerializer(organisations, many=True)
+        return Response(serializer.data)
+
+class OrganisationProjectsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, organisation_id):
+        # Check if user is a member of this organisation
+        if not OrganisationMembership.objects.filter(user=request.user, organisation_id=organisation_id).exists():
+            return Response({'detail': 'Not authorized for this organisation.'}, status=403)
+
+        # Get projects inside this organisation
+        projects = Project.objects.filter(organisation_id=organisation_id)
+        serializer = SimpleProjectSerializer(projects, many=True)
+        return Response(serializer.data)
+    
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()

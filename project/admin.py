@@ -34,6 +34,6 @@ class WorkLogAdmin(admin.ModelAdmin):
 
 @admin.register(Deliverable)
 class DeliverableAdmin(admin.ModelAdmin):
-    list_display = ('id', 'project', 'name', 'stage', 'status', 'remarks')
+    list_display = ('project','id',  'name', 'stage', 'status','start_date','remarks')
     list_filter = ('project', 'stage', 'status')
     search_fields = ('project__name', 'name', 'remarks')

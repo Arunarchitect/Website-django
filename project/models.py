@@ -81,6 +81,9 @@ class Deliverable(models.Model):
     remarks = models.TextField("Remarks", blank=True, null=True)
     start_date = models.DateField("Start Date", null=True, blank=True)
     end_date = models.DateField("End Date", null=True, blank=True)
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_deliverables")
+    validator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="validated_deliverables")
+    validation_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Deliverable"
@@ -94,10 +97,37 @@ class Deliverable(models.Model):
     def stage_name(self):
         return dict(self.STAGE_CHOICES).get(self.stage)
 
+    def save(self, *args, **kwargs):
+        # Set end_date if validation_date is set but end_date isn't
+        if self.validation_date and not self.end_date:
+            self.end_date = self.validation_date.date()
+        
+        super().save(*args, **kwargs)
+
+    def update_status_based_on_worklogs(self):
+        """Updates status to 'ongoing' if worklogs exist, else 'not_started'"""
+        has_worklogs = self.worklogs.exists()
+        
+        if has_worklogs:
+            if self.status == 'not_started':
+                self.status = 'ongoing'
+            # Update start_date if not set
+            if not self.start_date:
+                first_worklog = self.worklogs.earliest('start_time')
+                self.start_date = first_worklog.start_time.date()
+        elif self.status == 'ongoing':
+            self.status = 'not_started'
+        
+        if has_worklogs or self.status != 'not_started':
+            update_fields = ['status']
+            if not self.start_date and has_worklogs:
+                update_fields.append('start_date')
+            self.save(update_fields=update_fields)
+
 
 class WorkLog(models.Model):
     employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
-    deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.CASCADE)
+    deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.CASCADE, related_name='worklogs')
     start_time = models.DateTimeField("Start Time")
     end_time = models.DateTimeField("End Time", null=True, blank=True)
 
@@ -106,8 +136,32 @@ class WorkLog(models.Model):
         verbose_name_plural = "Work Logs"
 
     def __str__(self):
-        deliverable_name = self.deliverable.name if self.deliverable else "No Deliverable"
-        return f"{self.employee.email} - {deliverable_name} ({self.start_time.strftime('%Y-%m-%d')})"
+        return f"{self.employee.email} - {self.deliverable.name} ({self.start_time.strftime('%Y-%m-%d')})"
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding  # Check if this is a new record
+        
+        super().save(*args, **kwargs)
+        
+        if is_new:
+            # Update deliverable's start_date if it's not set
+            if not self.deliverable.start_date:
+                self.deliverable.start_date = self.start_time.date()
+                update_fields = ['start_date']
+                
+                # Also update status if needed
+                if self.deliverable.status == 'not_started':
+                    self.deliverable.status = 'ongoing'
+                    update_fields.append('status')
+                
+                self.deliverable.save(update_fields=update_fields)
+            else:
+                self.deliverable.update_status_based_on_worklogs()
+
+    def delete(self, *args, **kwargs):
+        deliverable = self.deliverable
+        super().delete(*args, **kwargs)
+        deliverable.update_status_based_on_worklogs()
 
     @property
     def duration(self):
@@ -118,5 +172,4 @@ class WorkLog(models.Model):
 
     @property
     def project(self):
-        """Access the project via deliverable"""
         return self.deliverable.project if self.deliverable else None

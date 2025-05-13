@@ -72,7 +72,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         )
 
-        deliverables = project.deliverables.values('name', 'stage', 'status', 'remarks')
+        deliverables = project.deliverables.values('name', 'stage', 'status','end_date', 'remarks')
 
         return Response({
             'project': project.name,

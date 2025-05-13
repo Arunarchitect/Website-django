@@ -98,6 +98,10 @@ class Deliverable(models.Model):
         return dict(self.STAGE_CHOICES).get(self.stage)
 
     def save(self, *args, **kwargs):
+        # Check if the status is being set to a validation status (e.g., ready for validation)
+        if self.status in ['ready', 'passed', 'failed', 'discrepancy'] and not self.worklogs.exists():
+            raise ValueError("Cannot set status to 'ready' or validation status without work logs.")
+        
         # Set end_date if validation_date is set but end_date isn't
         if self.validation_date and not self.end_date:
             self.end_date = self.validation_date.date()

@@ -47,7 +47,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class DeliverableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deliverable
-        fields = ['id', 'project', 'name', 'stage', 'status', 'remarks', 'start_date', 'end_date']
+        fields = ['id', 'project', 'name', 'stage', 'status', 'remarks', 'start_date', 'end_date', 'assignee']
 
 
 class WorkLogSerializer(serializers.ModelSerializer):

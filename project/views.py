@@ -51,6 +51,13 @@ class OrganisationProjectsView(APIView):
         return Response(serializer.data)
     
 
+from django.db.models import F, Sum, ExpressionWrapper, DurationField
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import viewsets
+from .models import Project, WorkLog
+from .serializers import ProjectSerializer
+
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -72,7 +79,23 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         )
 
-        deliverables = project.deliverables.values('name', 'stage', 'status','end_date', 'remarks')
+        # Include assignee's name in deliverables
+        deliverables = project.deliverables.select_related('assignee').values(
+            'name',
+            'stage',
+            'status',
+            'end_date',
+            'assignee',
+            'assignee__first_name',
+            'assignee__last_name',
+            'remarks'
+        )
+
+        # Add full name
+        deliverables_list = []
+        for d in deliverables:
+            d['assignee_name'] = f"{d['assignee__first_name']} {d['assignee__last_name']}".strip() if d['assignee'] else None
+            deliverables_list.append(d)
 
         return Response({
             'project': project.name,
@@ -85,7 +108,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 }
                 for item in work_summary
             ],
-            'deliverables': list(deliverables)
+            'deliverables': deliverables_list
         })
 
 class WorkLogViewSet(viewsets.ModelViewSet):

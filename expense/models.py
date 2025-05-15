@@ -37,7 +37,7 @@ class Expense(models.Model):
         ('sq.m', 'Square Metre'),
     ]
 
-    who_spent = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True)
+    who_spent = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)  # Now mandatory
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
@@ -57,4 +57,4 @@ class Expense(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.item.name} by {self.who_spent.email} on {self.date_of_purchase}"  # Using email instead of username
+        return f"{self.item.name} by {self.who_spent.email} on {self.date_of_purchase}"

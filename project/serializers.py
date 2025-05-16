@@ -60,3 +60,45 @@ class WorkLogSerializer(serializers.ModelSerializer):
 
     def get_deliverable_name(self, obj):
         return obj.deliverable.name if obj.deliverable else None
+
+
+
+# Add these new serializers to your existing serializers.py
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone']
+
+class UserOrganisationMembershipSerializer(serializers.ModelSerializer):
+    organisation = OrganisationSerializer()
+    
+    class Meta:
+        model = OrganisationMembership
+        fields = ['id', 'organisation', 'role']
+
+class UserDeliverableSerializer(serializers.ModelSerializer):
+    project = SimpleProjectSerializer()
+    stage_name = serializers.CharField(source='get_stage_display', read_only=True)
+    status_name = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = Deliverable
+        fields = ['id', 'name', 'project', 'stage', 'stage_name', 'status', 'status_name', 
+                 'start_date', 'end_date', 'validation_date']
+
+class UserWorkLogSerializer(serializers.ModelSerializer):
+    deliverable = serializers.StringRelatedField()
+    project = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkLog
+        fields = ['id', 'deliverable', 'project', 'start_time', 'end_time', 'duration']
+
+    def get_project(self, obj):
+        return obj.deliverable.project.name if obj.deliverable else None
+
+    def get_duration(self, obj):
+        if obj.end_time and obj.start_time:
+            return (obj.end_time - obj.start_time).total_seconds() / 3600  # Return hours
+        return None

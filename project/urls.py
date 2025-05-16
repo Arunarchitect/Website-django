@@ -9,6 +9,10 @@ from .views import (
     OrganisationListView, 
     OrganisationProjectsView,
     OrganisationMembersView,  # Add this import
+    UserDetailView,
+    UserOrganisationMembershipsView,
+    UserAssignedDeliverablesView,
+    UserWorkLogsView,
 )
 
 router = DefaultRouter()
@@ -22,4 +26,8 @@ urlpatterns = [
     path('my-organisations/', OrganisationListView.as_view(), name='my-organisations'),
     path('organisations/<int:organisation_id>/projects/', OrganisationProjectsView.as_view(), name='organisation-projects'),
     path('organisations/<int:organisation_id>/members/', OrganisationMembersView.as_view(), name='organisation-members'),  # Add this line
+    path('users/<int:user_id>/', UserDetailView.as_view(), name='user-detail'),
+    path('users/<int:user_id>/organisations/', UserOrganisationMembershipsView.as_view(), name='user-organisations'),
+    path('users/<int:user_id>/deliverables/', UserAssignedDeliverablesView.as_view(), name='user-deliverables'),
+    path('users/<int:user_id>/worklogs/', UserWorkLogsView.as_view(), name='user-worklogs'),
 ]

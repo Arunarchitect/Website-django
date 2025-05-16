@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from .models import Project, WorkLog, Deliverable
-from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer, OrganisationMembershipSerializer
+from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer, OrganisationMembershipSerializer, UserDetailSerializer,UserOrganisationMembershipSerializer,  UserDeliverableSerializer, UserWorkLogSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import OrganisationMembership,Organisation, Project
@@ -370,3 +370,75 @@ class OrganisationMembersView(APIView):
         
         serializer = OrganisationMembershipSerializer(members, many=True)
         return Response(serializer.data)
+    
+    
+    
+    
+# Add these new views to your existing views.py
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        # Check if requesting user has permission to view this user's details
+        # For simplicity, we'll allow if they share any organization
+        if not OrganisationMembership.objects.filter(
+            user=request.user,
+            organisation__in=OrganisationMembership.objects.filter(user_id=user_id).values('organisation')
+        ).exists():
+            return Response({'detail': 'Not authorized to view this user.'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserDetailSerializer(user)
+        return Response(serializer.data)
+
+class UserOrganisationMembershipsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        # Similar permission check as above
+        if not OrganisationMembership.objects.filter(
+            user=request.user,
+            organisation__in=OrganisationMembership.objects.filter(user_id=user_id).values('organisation')
+        ).exists():
+            return Response({'detail': 'Not authorized to view this user.'}, status=status.HTTP_403_FORBIDDEN)
+
+        memberships = OrganisationMembership.objects.filter(user_id=user_id).select_related('organisation')
+        serializer = UserOrganisationMembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
+
+class UserAssignedDeliverablesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        # Similar permission check
+        if not OrganisationMembership.objects.filter(
+            user=request.user,
+            organisation__in=OrganisationMembership.objects.filter(user_id=user_id).values('organisation')
+        ).exists():
+            return Response({'detail': 'Not authorized to view this user.'}, status=status.HTTP_403_FORBIDDEN)
+
+        deliverables = Deliverable.objects.filter(assignee_id=user_id).select_related('project', 'project__organisation')
+        serializer = UserDeliverableSerializer(deliverables, many=True)
+        return Response(serializer.data)
+
+class UserWorkLogsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        # Similar permission check
+        if not OrganisationMembership.objects.filter(
+            user=request.user,
+            organisation__in=OrganisationMembership.objects.filter(user_id=user_id).values('organisation')
+        ).exists():
+            return Response({'detail': 'Not authorized to view this user.'}, status=status.HTTP_403_FORBIDDEN)
+
+        worklogs = WorkLog.objects.filter(employee_id=user_id).select_related('deliverable', 'deliverable__project')
+        serializer = UserWorkLogSerializer(worklogs, many=True)
+        return Response(serializer.data)
+    
+    
+    

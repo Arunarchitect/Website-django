@@ -347,3 +347,26 @@ class DeliverableViewSet(viewsets.ModelViewSet):
             return Response(response_data, status=status.HTTP_207_MULTI_STATUS)
 
         return Response(response_data, status=status.HTTP_201_CREATED)
+
+# Add this class to your views.py
+class OrganisationMembersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, organisation_id):
+        # Check if user is a member of this organisation
+        if not OrganisationMembership.objects.filter(
+            user=request.user, 
+            organisation_id=organisation_id
+        ).exists():
+            return Response(
+                {'detail': 'Not authorized for this organisation.'}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Get all members of this organisation
+        members = OrganisationMembership.objects.filter(
+            organisation_id=organisation_id
+        ).select_related('user')
+        
+        serializer = OrganisationMembershipSerializer(members, many=True)
+        return Response(serializer.data)

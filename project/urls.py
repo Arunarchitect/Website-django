@@ -5,8 +5,10 @@ from .views import (
     ProjectViewSet,
     WorkLogViewSet,
     DeliverableViewSet,
-    MyMembershipsView,  # Importing the view
-    OrganisationListView, OrganisationProjectsView
+    MyMembershipsView,
+    OrganisationListView, 
+    OrganisationProjectsView,
+    OrganisationMembersView,  # Add this import
 )
 
 router = DefaultRouter()
@@ -16,7 +18,8 @@ router.register(r'deliverables', DeliverableViewSet, basename='deliverable')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('my-memberships/', MyMembershipsView.as_view(), name='my-memberships'),  # Add custom view
+    path('my-memberships/', MyMembershipsView.as_view(), name='my-memberships'),
     path('my-organisations/', OrganisationListView.as_view(), name='my-organisations'),
     path('organisations/<int:organisation_id>/projects/', OrganisationProjectsView.as_view(), name='organisation-projects'),
+    path('organisations/<int:organisation_id>/members/', OrganisationMembersView.as_view(), name='organisation-members'),  # Add this line
 ]

@@ -62,6 +62,10 @@ class Project(models.Model):
         return f"{self.name} ({self.client_name})"
 
 
+
+from django.core.exceptions import ValidationError
+
+
 class Deliverable(models.Model):
     STATUS_CHOICES = [
         ('not_started', 'Not Started'),
@@ -89,6 +93,7 @@ class Deliverable(models.Model):
         verbose_name = "Deliverable"
         verbose_name_plural = "Deliverables"
         unique_together = ('project', 'name', 'stage')
+        ordering = ['project', 'stage', 'name']
 
     def __str__(self):
         return f"{self.project.name} - {self.name} (Stage {self.stage}) - {self.get_status_display()}"
@@ -97,10 +102,23 @@ class Deliverable(models.Model):
     def stage_name(self):
         return dict(self.STAGE_CHOICES).get(self.stage)
 
+    def clean(self):
+        """Add model-level validation"""
+        super().clean()
+        
+        # Check if status requires work logs
+        if self.status in ['ready', 'passed', 'failed', 'discrepancy']:
+            if not self.pk or not self.worklogs.exists():
+                raise ValidationError(
+                    "Please add work logs before setting status to '%(status)s'.",
+                    params={'status': self.get_status_display()},
+                    code='invalid_status'
+                )
+
     def save(self, *args, **kwargs):
-        # Check if the status is being set to a validation status (e.g., ready for validation)
-        if self.status in ['ready', 'passed', 'failed', 'discrepancy'] and not self.worklogs.exists():
-            raise ValueError("Cannot set status to 'ready' or validation status without work logs.")
+        """Custom save method with validation"""
+        # Run full validation before saving
+        self.full_clean()
         
         # Set end_date if validation_date is set but end_date isn't
         if self.validation_date and not self.end_date:
@@ -127,8 +145,8 @@ class Deliverable(models.Model):
             if not self.start_date and has_worklogs:
                 update_fields.append('start_date')
             self.save(update_fields=update_fields)
-
-
+            
+            
 class WorkLog(models.Model):
     employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
     deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.CASCADE, related_name='worklogs')

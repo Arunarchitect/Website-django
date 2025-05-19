@@ -429,16 +429,20 @@ class UserWorkLogsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user_id):
-        # Similar permission check
+        # Check if request.user shares any organisation with the user_id
         if not OrganisationMembership.objects.filter(
             user=request.user,
             organisation__in=OrganisationMembership.objects.filter(user_id=user_id).values('organisation')
         ).exists():
             return Response({'detail': 'Not authorized to view this user.'}, status=status.HTTP_403_FORBIDDEN)
 
-        worklogs = WorkLog.objects.filter(employee_id=user_id).select_related('deliverable', 'deliverable__project')
+        worklogs = WorkLog.objects.filter(employee_id=user_id).select_related(
+            'deliverable',
+            'deliverable__project',
+            'deliverable__project__organisation'
+        )
         serializer = UserWorkLogSerializer(worklogs, many=True)
         return Response(serializer.data)
-    
+
     
     

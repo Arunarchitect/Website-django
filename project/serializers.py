@@ -89,16 +89,22 @@ class UserDeliverableSerializer(serializers.ModelSerializer):
 class UserWorkLogSerializer(serializers.ModelSerializer):
     deliverable = serializers.StringRelatedField()
     project = serializers.SerializerMethodField()
+    organisation = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkLog
-        fields = ['id', 'deliverable', 'project', 'start_time', 'end_time', 'duration']
+        fields = ['id', 'deliverable', 'project', 'organisation', 'start_time', 'end_time', 'duration']
 
     def get_project(self, obj):
-        return obj.deliverable.project.name if obj.deliverable else None
+        return obj.deliverable.project.name if obj.deliverable and obj.deliverable.project else None
+
+    def get_organisation(self, obj):
+        if obj.deliverable and obj.deliverable.project and obj.deliverable.project.organisation:
+            return obj.deliverable.project.organisation.name
+        return None
 
     def get_duration(self, obj):
         if obj.end_time and obj.start_time:
-            return (obj.end_time - obj.start_time).total_seconds() / 3600  # Return hours
+            return (obj.end_time - obj.start_time).total_seconds() / 3600  # in hours
         return None

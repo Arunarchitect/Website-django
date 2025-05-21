@@ -91,10 +91,11 @@ class UserWorkLogSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
     organisation = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkLog
-        fields = ['id', 'deliverable', 'project', 'organisation', 'start_time', 'end_time', 'duration']
+        fields = ['id', 'deliverable', 'project', 'organisation', 'start_time', 'end_time', 'duration', 'remarks']
 
     def get_project(self, obj):
         return obj.deliverable.project.name if obj.deliverable and obj.deliverable.project else None

@@ -152,6 +152,7 @@ class WorkLog(models.Model):
     deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.CASCADE, related_name='worklogs')
     start_time = models.DateTimeField("Start Time")
     end_time = models.DateTimeField("End Time", null=True, blank=True)
+    remarks = models.TextField("Remarks", blank=True, null=True)  # New field
 
     class Meta:
         verbose_name = "Work Log"

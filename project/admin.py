@@ -26,9 +26,9 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(WorkLog)
 class WorkLogAdmin(admin.ModelAdmin):
-    list_display = ('id', 'employee', 'deliverable', 'start_time', 'end_time', 'duration')
-    list_filter = ('employee', 'deliverable')
-    search_fields = ('employee__username', 'employee__email', 'deliverable__project__name', 'deliverable__name')
+    list_display = ('id', 'employee', 'deliverable', 'start_time', 'end_time', 'duration', 'remarks')
+    list_filter = ('employee', 'deliverable', 'remarks')
+    search_fields = ('employee__username', 'employee__email', 'deliverable__project__name', 'deliverable__name', 'remarks')
     date_hierarchy = 'start_time'
     raw_id_fields = ('employee', 'deliverable')
 

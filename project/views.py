@@ -126,7 +126,7 @@ class WorkLogViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = 'attachment; filename="worklogs.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Employee', 'Project', 'Deliverable', 'Start Time', 'End Time'])
+        writer.writerow(['Employee', 'Project', 'Deliverable', 'Start Time', 'End Time', 'remarks'])
 
         for log in logs:
             writer.writerow([

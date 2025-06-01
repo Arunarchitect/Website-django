@@ -44,7 +44,7 @@ class WorkLogAdmin(admin.ModelAdmin):
 
 @admin.register(Deliverable)
 class DeliverableAdmin(admin.ModelAdmin):
-    list_display = ('name', 'project', 'stage_display', 'status_display', 'assignee', 'start_date', 'has_worklogs')
+    list_display = ('id','name', 'project', 'stage_display', 'status_display', 'assignee', 'start_date', 'has_worklogs')
     list_filter = ('project', 'stage', 'status')
     search_fields = ('project__name', 'name', 'remarks')
     list_select_related = ('project', 'assignee')

@@ -52,14 +52,35 @@ class DeliverableSerializer(serializers.ModelSerializer):
 
 class WorkLogSerializer(serializers.ModelSerializer):
     deliverable_name = serializers.SerializerMethodField()
+    employee = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        required=False,
+        default=serializers.CurrentUserDefault()
+    )
 
     class Meta:
         model = WorkLog
         fields = '__all__'
-        read_only_fields = ['employee']
+        read_only_fields = ['employee']  # Employee is set automatically on create
 
     def get_deliverable_name(self, obj):
         return obj.deliverable.name if obj.deliverable else None
+
+    def validate(self, data):
+        """
+        Validate time ranges and other business logic
+        """
+        if 'start_time' in data and 'end_time' in data:
+            if data['start_time'] > data['end_time']:
+                raise serializers.ValidationError("End time must be after start time")
+        
+        # Add other validations as needed
+        return data
+
+    def create(self, validated_data):
+        """Ensure employee is set to current user on creation"""
+        validated_data['employee'] = self.context['request'].user
+        return super().create(validated_data)
 
 
 

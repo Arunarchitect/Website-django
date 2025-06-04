@@ -13,8 +13,11 @@ from .models import Project, WorkLog, Deliverable
 from .serializers import ProjectSerializer, WorkLogSerializer, DeliverableSerializer, OrganisationMembershipSerializer, UserDetailSerializer,UserOrganisationMembershipSerializer,  UserDeliverableSerializer, UserWorkLogSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import OrganisationMembership,Organisation, Project
-from .serializers import OrganisationSerializer, SimpleProjectSerializer
+from .models import OrganisationMembership,Organisation, Project, Expense
+from .serializers import OrganisationSerializer, SimpleProjectSerializer, ExpenseSerializer
+
+
+
 
 User = get_user_model()
 
@@ -446,3 +449,91 @@ class UserWorkLogsView(APIView):
 
     
     
+    
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db.models import Q, Sum, Count
+
+
+class ExpenseViewSet(viewsets.ModelViewSet):
+    serializer_class = ExpenseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Returns different querysets based on user role:
+        - Regular users see only their own expenses
+        - Admin users see all expenses
+        """
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return Expense.objects.all().select_related('user', 'project')
+        return Expense.objects.filter(user=user).select_related('user', 'project')
+
+    def perform_create(self, serializer):
+        """Automatically set the user to the current user when creating an expense"""
+        serializer.save(user=self.request.user)
+
+    def get_permissions(self):
+        """
+        Only allow admin users to use the 'admin_list' action
+        """
+        if self.action == 'admin_list':
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
+
+    @action(detail=False, methods=['get'], url_path='admin-list')
+    def admin_list(self, request):
+        """
+        Special endpoint for admin users to view all expenses with additional filtering options
+        """
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response(
+                {'detail': 'You do not have permission to access this endpoint.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        """
+        Provides summary statistics about expenses
+        """
+        user = request.user
+        queryset = self.get_queryset()
+
+        # Basic summary stats
+        total_expenses = queryset.aggregate(total=Sum('amount'))['total'] or 0
+        expense_count = queryset.count()
+
+        # If admin, provide breakdown by user
+        user_breakdown = None
+        if user.is_staff or user.is_superuser:
+            user_breakdown = (
+                Expense.objects.values('user__email', 'user__first_name', 'user__last_name')
+                .annotate(total=Sum('amount'), count=Count('id'))
+                .order_by('-total')
+            )
+
+        # Category breakdown
+        category_breakdown = (
+            queryset.values('category')
+            .annotate(total=Sum('amount'), count=Count('id'))
+            .order_by('-total')
+        )
+
+        return Response({
+            'total_expenses': total_expenses,
+            'expense_count': expense_count,
+            'user_breakdown': user_breakdown,
+            'category_breakdown': category_breakdown,
+        })

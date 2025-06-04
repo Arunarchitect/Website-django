@@ -196,3 +196,34 @@ class WorkLog(models.Model):
     @property
     def project(self):
         return self.deliverable.project if self.deliverable else None
+
+
+class Expense(models.Model):
+    CATEGORY_CHOICES = [
+        ('travel', 'Travel'),
+        ('food', 'Food'),
+        ('accommodation', 'Accommodation'),
+        ('stationery', 'Stationery'),
+        ('others', 'Others'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='expenses')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    remarks = models.TextField(blank=True, null=True)
+    date = models.DateField()  # Changed to regular DateField (not auto_now_add)
+    created_at = models.DateTimeField(auto_now_add=True)  # For record keeping
+
+    class Meta:
+        verbose_name = "Expense"
+        verbose_name_plural = "Expenses"
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.get_category_display()} - {self.amount} ({self.date})"
+
+    def clean(self):
+        """Add validation for amount"""
+        if self.amount <= 0:
+            raise ValidationError("Amount must be greater than zero.")

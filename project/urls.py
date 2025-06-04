@@ -13,12 +13,14 @@ from .views import (
     UserOrganisationMembershipsView,
     UserAssignedDeliverablesView,
     UserWorkLogsView,
+    ExpenseViewSet,
 )
 
 router = DefaultRouter()
 router.register(r'projects', ProjectViewSet, basename='project')
 router.register(r'work-logs', WorkLogViewSet, basename='worklog')
 router.register(r'deliverables', DeliverableViewSet, basename='deliverable')
+router.register(r'expenses', ExpenseViewSet, basename='expense')
 
 urlpatterns = [
     path('', include(router.urls)),

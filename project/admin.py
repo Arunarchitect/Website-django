@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import Project, WorkLog, Deliverable, Organisation, OrganisationMembership
+from .models import Project, WorkLog, Deliverable, Organisation, OrganisationMembership, Expense
 
 
 @admin.register(Organisation)
@@ -84,6 +84,43 @@ class DeliverableAdmin(admin.ModelAdmin):
         return obj.worklogs.exists()
     has_worklogs.boolean = True
     has_worklogs.short_description = 'Has Worklogs'
+
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except ValidationError as e:
+            self.message_user(request, str(e), level=messages.ERROR)
+        except Exception as e:
+            self.message_user(request, f"An error occurred: {str(e)}", level=messages.ERROR)
+            
+            
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'project', 'category_display', 'amount', 'date', 'remarks_short')
+    list_filter = ('category', 'date', 'project')
+    search_fields = ('user__username', 'project__name', 'remarks')
+    date_hierarchy = 'date'
+    raw_id_fields = ('user', 'project')
+    
+    fieldsets = (
+        (None, {
+            'fields': ('user', 'project', 'amount', 'category'),
+            'description': 'Basic expense information'
+        }),
+        ('Details', {
+            'fields': ('date', 'remarks'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def category_display(self, obj):
+        return obj.get_category_display()
+    category_display.short_description = 'Category'
+    category_display.admin_order_field = 'category'
+
+    def remarks_short(self, obj):
+        return obj.remarks[:50] + '...' if obj.remarks and len(obj.remarks) > 50 else obj.remarks
+    remarks_short.short_description = 'Remarks'
 
     def save_model(self, request, obj, form, change):
         try:

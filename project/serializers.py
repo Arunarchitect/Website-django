@@ -4,7 +4,8 @@ from .models import (
     OrganisationMembership,
     Project,
     WorkLog,
-    Deliverable
+    Deliverable,
+    Expense
 )
 from django.contrib.auth import get_user_model
 
@@ -130,3 +131,54 @@ class UserWorkLogSerializer(serializers.ModelSerializer):
         if obj.end_time and obj.start_time:
             return (obj.end_time - obj.start_time).total_seconds() / 3600  # in hours
         return None
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        write_only=True,
+        source='user',
+        required=False,
+        default=serializers.CurrentUserDefault()
+    )
+    project = SimpleProjectSerializer(read_only=True)
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(),
+        write_only=True,
+        source='project'
+    )
+    category_name = serializers.CharField(source='get_category_display', read_only=True)
+    
+    class Meta:
+        model = Expense
+        fields = [
+            'id', 
+            'user', 'user_id',
+            'project', 'project_id',
+            'amount', 
+            'category', 'category_name',
+            'date', 
+            'remarks',
+            'created_at'
+        ]
+        read_only_fields = ['user', 'created_at']
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Amount must be greater than zero.")
+        return value
+
+    def validate_date(self, value):
+        # Add any date validation logic here
+        # For example, prevent future dates:
+        from django.utils import timezone
+        if value > timezone.now().date():
+            raise serializers.ValidationError("Expense date cannot be in the future.")
+        return value
+
+    def create(self, validated_data):
+        """Ensure user is set to current user on creation"""
+        if 'user' not in validated_data:
+            validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)

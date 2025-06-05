@@ -4,6 +4,9 @@ from django.db.models.functions import TruncMonth
 from django.utils.translation import gettext_lazy as _
 import datetime
 from .models import Expense, Item, Category, Brand, Shop
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Custom Month Filter
 class MonthFilter(admin.SimpleListFilter):
@@ -23,6 +26,34 @@ class MonthFilter(admin.SimpleListFilter):
             )
         return queryset
 
+# Custom Category Filter
+class CategoryFilter(admin.SimpleListFilter):
+    title = _('category')
+    parameter_name = 'category'
+
+    def lookups(self, request, model_admin):
+        categories = Category.objects.all().order_by('name')
+        return [(category.id, category.name) for category in categories]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(category__id=self.value())
+        return queryset
+
+# Custom User Filter
+class UserFilter(admin.SimpleListFilter):
+    title = _('user')
+    parameter_name = 'user'
+
+    def lookups(self, request, model_admin):
+        users = User.objects.filter(expense__isnull=False).distinct().order_by('first_name')
+        return [(user.id, f"{user.first_name} {user.last_name}") for user in users]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(who_spent__id=self.value())
+        return queryset
+
 # Admin for Expense
 class ExpenseAdmin(admin.ModelAdmin):
     list_display = (
@@ -33,12 +64,17 @@ class ExpenseAdmin(admin.ModelAdmin):
     ordering = ('-date_of_purchase',)
     list_per_page = 50
     change_list_template = 'admin/expense/expense/change_list.html'
-    list_filter = (MonthFilter,)  # 👈 Added Month filter here
+    list_filter = (MonthFilter, CategoryFilter, UserFilter)  # Added all filters here
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(request, extra_context)
         try:
             qs = response.context_data['cl'].queryset
+
+            # Get active filters
+            active_month = request.GET.get('month', None)
+            active_category = request.GET.get('category', None)
+            active_user = request.GET.get('user', None)
 
             # GRAND TOTAL (userwise)
             grand_total_by_user = (
@@ -75,6 +111,12 @@ class ExpenseAdmin(admin.ModelAdmin):
             # HTML Table Layout for Monthly Summary
             table_content = f"""
                 <h3>Monthly Summary</h3>
+                <div style="margin-bottom: 10px;">
+                    <strong>Active Filters:</strong>
+                    {f"Month: {active_month}" if active_month else ""}
+                    {f", Category: {Category.objects.get(id=active_category).name}" if active_category else ""}
+                    {f", User: {User.objects.get(id=active_user).get_full_name()}" if active_user else ""}
+                </div>
                 <table style="width: 100%; border: 1px solid #ddd; border-collapse: collapse;">
                     <thead>
                         <tr>

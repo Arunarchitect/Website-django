@@ -147,40 +147,70 @@ class Deliverable(models.Model):
             self.save(update_fields=update_fields)
             
             
+from django.utils import timezone
+from django.db import models
+
 class WorkLog(models.Model):
+    # Existing fields
     employee = models.ForeignKey(User, verbose_name="Employee", on_delete=models.CASCADE)
     deliverable = models.ForeignKey(Deliverable, verbose_name="Deliverable", on_delete=models.CASCADE, related_name='worklogs')
     start_time = models.DateTimeField("Start Time")
     end_time = models.DateTimeField("End Time", null=True, blank=True)
-    remarks = models.TextField("Remarks", blank=True, null=True)  # New field
+    remarks = models.TextField("Remarks", blank=True, null=True)
+    
+    # New fields with temporary defaults (will be overridden)
+    entered_time = models.DateTimeField("Record Time", default=timezone.now)
+    edited_time = models.DateTimeField("Last Edited Time", default=timezone.now)
 
     class Meta:
         verbose_name = "Work Log"
         verbose_name_plural = "Work Logs"
 
-    def __str__(self):
-        return f"{self.employee.email} - {self.deliverable.name} ({self.start_time.strftime('%Y-%m-%d')})"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Initialize time fields for existing records when model is loaded
+        self._initialize_time_fields()
+
+    def _initialize_time_fields(self):
+        """Set fallback values only if missing."""
+        if self.pk:
+            if self.entered_time is None:
+                self.entered_time = self.start_time
+            if self.edited_time is None:
+                self.edited_time = self.end_time or self.start_time
+
 
     def save(self, *args, **kwargs):
-        is_new = self._state.adding  # Check if this is a new record
         
+        # Ensure time fields are properly set before saving
+        self._initialize_time_fields()
+        
+        # Track if this is a new record
+        is_new = self._state.adding
+        
+        # For new records, let Django handle auto_now_add/auto_now behavior
+        if is_new:
+            self.entered_time = timezone.now()
+            self.edited_time = timezone.now()
+        else:
+            # For existing records, update edited_time on each save
+            self.edited_time = timezone.now()
+
         super().save(*args, **kwargs)
         
+        # Original deliverable status update logic
         if is_new:
-            # Update deliverable's start_date if it's not set
             if not self.deliverable.start_date:
                 self.deliverable.start_date = self.start_time.date()
                 update_fields = ['start_date']
-                
-                # Also update status if needed
                 if self.deliverable.status == 'not_started':
                     self.deliverable.status = 'ongoing'
                     update_fields.append('status')
-                
                 self.deliverable.save(update_fields=update_fields)
             else:
                 self.deliverable.update_status_based_on_worklogs()
 
+    # Rest of your existing methods remain unchanged
     def delete(self, *args, **kwargs):
         deliverable = self.deliverable
         super().delete(*args, **kwargs)
@@ -196,7 +226,6 @@ class WorkLog(models.Model):
     @property
     def project(self):
         return self.deliverable.project if self.deliverable else None
-
 
 class Expense(models.Model):
     CATEGORY_CHOICES = [

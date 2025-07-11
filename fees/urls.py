@@ -1,8 +1,6 @@
-# fees/urls.py
-
 from django.urls import path
 from .views import FeeWithPromoAPIView
 
 urlpatterns = [
-    path('fee/', FeeWithPromoAPIView.as_view(), name='fee-with-promo'),
+    path('fees/', FeeWithPromoAPIView.as_view(), name='fee-api'),
 ]

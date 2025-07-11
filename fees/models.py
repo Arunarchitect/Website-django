@@ -11,24 +11,17 @@ class PromoCode(models.Model):
         verbose_name = "Promo Code"
         verbose_name_plural = "Promo Codes"
 
+
 class Fee(models.Model):
-    base_fee_per_sqft = models.DecimalField("Base Fee per Sq.Ft", max_digits=10, decimal_places=2)
-    promo_code = models.ForeignKey(
-        PromoCode,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name="Associated Promo Code"
-    )
+    base_fee_per_sqft = models.DecimalField(max_digits=10, decimal_places=2)
+    consultant = models.CharField(max_length=100, blank=True, null=True)
+    designation = models.CharField(max_length=100, blank=True, null=True)
+    education = models.CharField(max_length=100, blank=True, null=True)
+    promo_code = models.CharField(max_length=50, blank=True, null=True)  # Now a plain text field
+    url = models.URLField(max_length=200, blank=True, null=True)  # ✅ new field
 
     def __str__(self):
         return f"Fee: ₹{self.base_fee_per_sqft} per sq.ft"
-
-    def get_discounted_fee(self, code):
-        if self.promo_code and self.promo_code.code.lower() == code.lower():
-            discount = (self.base_fee_per_sqft * self.promo_code.discount_percentage) / 100
-            return self.base_fee_per_sqft - discount
-        return self.base_fee_per_sqft
 
     class Meta:
         verbose_name = "Fee Entry"

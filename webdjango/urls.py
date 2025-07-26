@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/', include('djoser.urls')),           # Auth routes (e.g., login, logout, etc.)
     path('api/', include('users.urls')),            # Custom user endpoints
     path('api/', include('project.urls')),         # Project-specific non-ViewSet endpoints
+    path('api/', include('quiz.urls')),         # Project-specific non-ViewSet endpoints
     path('api/', include(router.urls)),             # REST API for projects, worklogs, deliverables
 ]
 

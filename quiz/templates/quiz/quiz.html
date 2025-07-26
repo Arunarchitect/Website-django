@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <style>
+        .correct { color: green; }
+        .wrong { color: red; }
+        .explanation { font-style: italic; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>OMR Quiz</h1>
+
+    <!-- 🔼 NEW FORM to choose number of questions -->
+    <form method="get" style="margin-bottom: 20px;">
+        <label for="count">How many questions do you want?</label>
+        <input type="number" id="count" name="count" min="1" max="{{ questions|length }}" value="{{ request.GET.count|default:questions|length }}">
+        <button type="submit">Load Questions</button>
+    </form>
+
+    <h2 id="score"></h2>
+
+    <form id="quizForm">
+        {% for q in questions %}
+            <div class="question" data-question-id="{{ q.id }}" style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+                <p><strong>Q{{ forloop.counter }}: {{ q.question_text }}</strong></p>
+                <label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_1 }}"> {{ q.option_1 }}</label><br>
+                <label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_2 }}"> {{ q.option_2 }}</label><br>
+                <label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_3 }}"> {{ q.option_3 }}</label><br>
+                <label><input type="radio" name="question_{{ q.id }}" value="{{ q.correct_option }}"> {{ q.correct_option }}</label><br>
+                <div class="feedback"></div>
+            </div>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById("quizForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch("{% url 'evaluate' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("score").textContent = `Your Score: ${data.score} / ${data.total}`;
+
+                data.explanations.forEach(expl => {
+                    const questionDiv = document.querySelector(`.question[data-question-id='${expl.id}']`);
+                    const feedbackDiv = questionDiv.querySelector('.feedback');
+                    const radios = questionDiv.querySelectorAll("input[type='radio']");
+
+                    radios.forEach(radio => {
+                        const label = radio.parentElement;
+                        if (radio.value === expl.correct) {
+                            label.innerHTML += ' ✅';
+                            label.classList.add('correct');
+                        }
+                        if (radio.checked && radio.value !== expl.correct) {
+                            label.innerHTML += ' ❌';
+                            label.classList.add('wrong');
+                        }
+                    });
+
+                    feedbackDiv.innerHTML = `
+                        <div class="explanation">
+                            <strong>Explanation:</strong> ${expl.explanation || 'No explanation provided.'}
+                        </div>
+                    `;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

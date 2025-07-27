@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -21,10 +21,13 @@ class ExamViewSet(viewsets.ModelViewSet):
 
 # ----------- Custom Quiz API Views -----------
 
+
 @api_view(['GET'])
 def get_questions(request):
     """
-    Returns random questions. Use ?count=5 to limit number.
+    Returns non-repeating random questions per session.
+    Will return all remaining unseen questions first, then reset and fill the rest.
+    Repeats only after at least 10 questions served.
     """
     try:
         count = int(request.GET.get('count', 5))
@@ -33,9 +36,42 @@ def get_questions(request):
     except ValueError:
         count = 5
 
-    questions = Question.objects.order_by('?')[:count]
+    total_questions = Question.objects.count()
+    seen_ids = request.session.get('seen_question_ids', [])
+
+    # Reset if all seen (but do this only after extracting all remaining unseen below)
+    max_unique_limit = min(10, total_questions)
+
+    # 1. Get unseen questions
+    unseen_questions = Question.objects.exclude(id__in=seen_ids)
+    unseen_count = unseen_questions.count()
+
+    if unseen_count >= count:
+        # Enough unseen questions
+        questions = unseen_questions.order_by('?')[:count]
+        seen_ids += [q.id for q in questions]
+    else:
+        # 2. Take all unseen first
+        questions = list(unseen_questions.order_by('?'))
+
+        # 3. Reset seen_ids, but avoid repeating just-served ones
+        seen_ids = [q.id for q in questions]
+
+        remaining_count = count - len(questions)
+        refill_pool = Question.objects.exclude(id__in=seen_ids).order_by('?')[:remaining_count]
+
+        questions += list(refill_pool)
+        seen_ids += [q.id for q in refill_pool]
+
+    # Limit tracking to max unique count
+    if len(seen_ids) > max_unique_limit:
+        seen_ids = seen_ids[-max_unique_limit:]
+
+    request.session['seen_question_ids'] = seen_ids
+
     serializer = QuestionSerializer(questions, many=True)
     return Response(serializer.data)
+
 
 
 @api_view(['POST'])

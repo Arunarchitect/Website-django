@@ -1,0 +1,218 @@
+[
+    {
+        "category": "Architecture and Design",
+        "question_text": "Primary generator of form in design is:",
+        "option_1": "Plane",
+        "option_2": "Point",
+        "option_3": "Line",
+        "correct_option": "Volume",
+        "explanation": "Volume defines a 3D space, which is the core of form-making in architecture." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "‘Perspective View’ concept was developed in Europe during:",
+        "option_1": "Roman Empire",
+        "option_2": "Romanesque",
+        "option_3": "Gothic",
+        "correct_option": "Renaissance",
+        "explanation": "Linear perspective was formally developed during the Renaissance by artists like Brunelleschi." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "In a two-dimensional composition, spatial depth can be created by the principle of:",
+        "option_1": "Balance",
+        "option_2": "Rhythm",
+        "option_3": "Harmony",
+        "correct_option": "Perspectives",
+        "explanation": "Perspective gives an illusion of depth in 2D drawings by simulating 3D space." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "_______ is a code of practice for architecture and building drawings in India.",
+        "option_1": "IS 960",
+        "option_2": "IS 500",
+        "option_3": "IS 267",
+        "correct_option": "IS 962",
+        "explanation": "IS 962 is the Bureau of Indian Standards code for construction and architectural drawings." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "The dome of Florence cathedral built during 1420–34, was designed by:",
+        "option_1": "Leon Batista Alberti",
+        "option_2": "Giacomo da Vignola",
+        "option_3": "Giuliano da Sangallo",
+        "correct_option": "Filipo Brunelleschi",
+        "explanation": "Filipo Brunelleschi engineered the dome with innovative techniques during the early Renaissance." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Aranya housing project of Indore was designed by:",
+        "option_1": "Le Corbusier",
+        "option_2": "Raj Rewal",
+        "option_3": "Charles Correa",
+        "correct_option": "BV Doshi",
+        "explanation": "BV Doshi's Aranya project provided low-cost housing with community integration in Indore." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "For a complementary scheme, blue-violet should be associated with:",
+        "option_1": "Red - Orange",
+        "option_2": "Red - Violet",
+        "option_3": "None of the above",
+        "correct_option": "Yellow - Orange",
+        "explanation": "Complementary colors are opposite on the color wheel; blue-violet complements yellow-orange." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Primary colors of natural light are:",
+        "option_1": "Red, Blue, Yellow",
+        "option_2": "Red, Violet, Green",
+        "option_3": "Red, Green, Yellow",
+        "correct_option": "Red, Blue, Green",
+        "explanation": "RGB (Red, Green, Blue) are additive primary colors used in light-based systems." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "The saturation level of a color represents:",
+        "option_1": "Distribution",
+        "option_2": "Darkness",
+        "option_3": "Warmth",
+        "correct_option": "Brilliance",
+        "explanation": "Saturation indicates the purity or intensity of a color—how vivid or dull it appears." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "The wedge shaped stone used in constructing an arch is:",
+        "option_1": "Extrados",
+        "option_2": "Abutment",
+        "option_3": "Impost",
+        "correct_option": "Voussoir",
+        "explanation": "Voussoirs are the wedge-shaped stones placed around the curve of an arch." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "A gallery formed by a colonnade open on one or more sides, usually on upper floor of a building is called a:",
+        "option_1": "Balcony",
+        "option_2": "Patio",
+        "option_3": "Porch",
+        "correct_option": "Loggia",
+        "explanation": "Loggias are roofed galleries with open sides supported by columns, often on upper levels." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Which of the following features is NOT common to both Byzantine and Early Christian churches?",
+        "option_1": "The use of mosaic for decoration",
+        "option_2": "The use of clerestory to bring in light from high windows",
+        "option_3": "The important position of the apse",
+        "correct_option": "The linear basilica style",
+        "explanation": "Byzantine churches preferred centralized plans, unlike the linear basilica of early Christian architecture." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "The _____ were the first known civilization to use entablature in their architecture.",
+        "option_1": "Greeks",
+        "option_2": "Egyptians",
+        "option_3": "Dutch",
+        "correct_option": "Egyptians",
+        "explanation": "Egyptians were among the first to use horizontal beams (proto-entablature) in monumental architecture." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "In which of the Greek architectural orders is the Parthenon built?",
+        "option_1": "The Corinthian order",
+        "option_2": "The Ionic order",
+        "option_3": "The Athenian order",
+        "correct_option": "The Doric order",
+        "explanation": "The Parthenon was designed in the Doric order, noted for its sturdy columns and plain capitals." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "_______ was the Greek architect who Alexander the Great hired to assist in the building of Alexandria.",
+        "option_1": "Iktinos",
+        "option_2": "Phaeax",
+        "option_3": "Metagenes",
+        "correct_option": "Parmenion",
+        "explanation": "Parmenion was a general and planner assisting Alexander in laying out Alexandria." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "What style of architecture is the Ram Temple built in?",
+        "option_1": "Vastu Shastra",
+        "option_2": "Dravidian",
+        "option_3": "Traditional",
+        "correct_option": "Nagara",
+        "explanation": "The Ram Temple in Ayodhya is designed in Nagara style, typical of North Indian temples." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Indore Slum Networking Program has been planned by:",
+        "option_1": "Dulal Mukherjee",
+        "option_2": "Charles Correa",
+        "option_3": "BV Doshi",
+        "correct_option": "Himanshu Parikh",
+        "explanation": "Himanshu Parikh pioneered this sustainable infrastructure approach for slums in Indore." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "The author of the book 'Human Aspects of Urban Form' is:",
+        "option_1": "Cliff Moughtin",
+        "option_2": "Peter Katz",
+        "option_3": "Lewis Mumford",
+        "correct_option": "Amos Rapoport",
+        "explanation": "Amos Rapoport’s book discusses human behavior in relation to urban space and form." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Bowellism is a modern architectural style heavily associated with:",
+        "option_1": "Richerd James",
+        "option_2": "Charles Correa",
+        "option_3": "Louis I. Kahn",
+        "correct_option": "Richard Rogers",
+        "explanation": "Bowellism exposes a building’s inner functions and services, as seen in Richard Rogers’ works like the Lloyd’s Building." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "‘Folk, Work, Place’ concept was given by:",
+        "option_1": "Patrick Geddes",
+        "option_2": "CA Doxiadis",
+        "option_3": "Le Corbusier",
+        "correct_option": "Ebenezer Howard",
+        "explanation": "Howard’s concept was part of the Garden City movement, linking people (folk), economy (work), and settlement (place)." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Which of the following architects adopted the phrase “Less is More”?",
+        "option_1": "Walter Gropius",
+        "option_2": "Adolf Loos",
+        "option_3": "Luis Sullivan",
+        "correct_option": "Ludwig Mies van der Rohe",
+        "explanation": "Mies van der Rohe coined the phrase ‘Less is More’ to advocate minimalism in architecture." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Robie House, Falling Water and Schroder house are dominated by:",
+        "option_1": "Linear elements",
+        "option_2": "Single vertical plane",
+        "option_3": "Vertical linear elements",
+        "correct_option": "Planar elements",
+        "explanation": "These buildings feature strong use of horizontal and vertical planes defining architectural space." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "Which among these is not a warm color?",
+        "option_1": "Red",
+        "option_2": "Yellow",
+        "option_3": "Orange",
+        "correct_option": "Purple",
+        "explanation": "Purple is a cool color, whereas red, orange, and yellow are considered warm hues." 
+    },
+    {
+        "category": "Architecture and Design",
+        "question_text": "The rat trap bond in brickwork was popularized by the architect:",
+        "option_1": "Charles Correa",
+        "option_2": "Achyut Kanvinde",
+        "option_3": "BV Doshi",
+        "correct_option": "Laurie Baker",
+        "explanation": "Laurie Baker used rat-trap bond to reduce brick usage while enhancing insulation and aesthetics." 
+    }
+]

@@ -1,0 +1,452 @@
+[
+    {
+        "category": "Urban Planning",
+        "question_text": "Capital town of Gandhinagar has been designed by:",
+        "option_1": "Norman Foster",
+        "option_2": "BV Doshi",
+        "option_3": "Le Corbusier",
+        "correct_option": "H.K. Mewada",
+        "explanation": "Gandhinagar was planned by H.K. Mewada and Prakash Apte, though influenced by Le Corbusier's Chandigarh."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Lowry's model of Metropolis (1964) includes two _________ spatial interaction models.",
+        "option_1": "Triply constrained",
+        "option_2": "Unconstrained",
+        "option_3": "Doubly constrained",
+        "correct_option": "Single constrained",
+        "explanation": "Lowry's model combines single-constrained (workplace attraction) and unconstrained models."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Ebenezer Howard suggested the maximum population of 'Garden City' as___________ persons.",
+        "option_1": "10,000",
+        "option_2": "20,000",
+        "option_3": "58,000",
+        "correct_option": "32,000",
+        "explanation": "Howard's Garden City concept proposed 32,000 people for balanced urban-rural living."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "The law of Primate City was first proposed by:",
+        "option_1": "Colin Clark",
+        "option_2": "Harold Hotelling",
+        "option_3": "Samuel A. Stouffer",
+        "correct_option": "Mark Jefferson",
+        "explanation": "Mark Jefferson introduced the Primate City concept in 1939 about disproportionately large cities."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Greater London Plan, 1944 was prepared by______.",
+        "option_1": "Prince Charles",
+        "option_2": "Christopher Wren",
+        "option_3": "Ebenezer Howard",
+        "correct_option": "Patrick Abercrombie",
+        "explanation": "Abercrombie's plan decentralized London through new towns and green belts."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "The term 'Conurbation' is coined by:",
+        "option_1": "Charles Correa",
+        "option_2": "Lewis Mumford",
+        "option_3": "Stuart Chapin",
+        "correct_option": "Patrick Geddes",
+        "explanation": "Geddes used 'conurbation' in 1915 to describe merged urban areas."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "'Agora' was provided in Greek towns as a place of:",
+        "option_1": "Worship",
+        "option_2": "Drama",
+        "option_3": "Sports",
+        "correct_option": "Meeting",
+        "explanation": "Agora was the central public space for assemblies and markets."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The proportion of the sides of a traditional Japanese tatami mat is:",
+        "option_1": "1:1.414",
+        "option_2": "1:1.5",
+        "option_3": "1:1.618",
+        "correct_option": "1:2",
+        "explanation": "Standard tatami mats follow 1:2 ratio (typically 90cm x 180cm)."
+    },
+    {
+        "category": "Building Regulations",
+        "question_text": "Educational buildings belong to:",
+        "option_1": "Group A",
+        "option_2": "Group C",
+        "option_3": "Group D",
+        "correct_option": "Group B",
+        "explanation": "As per NBC 2016, Group B covers educational/institutional buildings."
+    },
+    {
+        "category": "Building Calculations",
+        "question_text": "One hectare is equal to:",
+        "option_1": "4000 m²",
+        "option_2": "4048 m²",
+        "option_3": "4840 m²",
+        "correct_option": "10000 m²",
+        "explanation": "1 hectare = 10,000 m² (100m x 100m)."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "At which archaeological site in Bihar, archaeological records from Neolithic to Pala dynasty have been found?",
+        "option_1": "Nalanda",
+        "option_2": "Barabar Caves",
+        "option_3": "Vikramashila",
+        "correct_option": "Chirand",
+        "explanation": "Chirand shows continuous habitation from Neolithic (2500 BCE) to medieval periods."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "What is the name of the special shape of land that is found in the northern plains of Bihar in which water is filled?",
+        "option_1": "Taal",
+        "option_2": "Diyara",
+        "option_3": "Jalla",
+        "correct_option": "Chaur",
+        "explanation": "Chaurs are seasonal wetlands in Bihar's floodplains."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "The old building of Patna Collectorate is influenced by which of the following architectural style?",
+        "option_1": "Mughal",
+        "option_2": "Persian",
+        "option_3": "Roman",
+        "correct_option": "Dutch",
+        "explanation": "Built in 1860s, it shows Dutch colonial-era brickwork and vaults."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "Tudor arch is a :",
+        "option_1": "Semi circular arch",
+        "option_2": "2 centered arch",
+        "option_3": "3 centered arch",
+        "correct_option": "4 centered arch",
+        "explanation": "Characteristic flattened pointed arch with four centers, common in English Gothic architecture."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Which of the following is the first Garden City as per the idea of Ebenezer Howard?",
+        "option_1": "Bern",
+        "option_2": "Greendale",
+        "option_3": "Priene",
+        "correct_option": "Letchworth",
+        "explanation": "Letchworth (1903) was the first realized Garden City, located in Hertfordshire, England."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "The application of the linear city concept to the redevelopment of London in 1937 was by :",
+        "option_1": "Soria Y mata",
+        "option_2": "Le Corbusier",
+        "option_3": "Frank Llyod Wright",
+        "correct_option": "MARS group",
+        "explanation": "The Modern Architectural Research group proposed linear city plans for London's expansion."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "Which village in Bihar has been selected by the South Korean government to make it a model village?",
+        "option_1": "PYAREPUR Pawapuri, Nalanda",
+        "option_2": "Shekha Bigha, Gaya",
+        "option_3": "Devgaon, Gaya",
+        "correct_option": "Chinaberia, Jehanabad",
+        "explanation": "Selected in 2018 for the Korea-Bihar Friendship Village project under New Village Movement."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The literal meaning of Feng Shui is:",
+        "option_1": "House and Household",
+        "option_2": "Sensitivity towards Design",
+        "option_3": "Efficiency of Design",
+        "correct_option": "Wind and water",
+        "explanation": "Chinese geomancy system literally translating to 'wind-water' (风水)."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "The essential components of Orissan Temple are:",
+        "option_1": "Ratha, Vimana, Harmika",
+        "option_2": "Vedika, Pradakshina, Harmika",
+        "option_3": "Torana, Stupa, pida",
+        "correct_option": "Kalasa, Pida, Bada",
+        "explanation": "Bada (base), Pida (pyramidal roof), and Kalasa (finial) define Orissan temple architecture."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "Where is the Birla Mandir built by the famous industrialist BD Birla situated?",
+        "option_1": "Darbhanga",
+        "option_2": "Bhagalpur",
+        "option_3": "Begusarai",
+        "correct_option": "Patna",
+        "explanation": "White marble temple constructed in 1930s on the banks of Ganges in Patna."
+    },
+    {
+        "category": "Building Regulations",
+        "question_text": "The regional office of CAPART is functioning in Bihar.",
+        "option_1": "Rajgir",
+        "option_2": "Motihari",
+        "option_3": "Bhagalpur",
+        "correct_option": "Patna",
+        "explanation": "Council for Advancement of People's Action and Rural Technology's regional office is in Patna."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "The Neo-classical movement in the 18th century began as a reaction against:",
+        "option_1": "Gothic style",
+        "option_2": "Romanesque style",
+        "option_3": "Renaissance style",
+        "correct_option": "Baroque style",
+        "explanation": "Rejected Baroque's ornate drama in favor of classical simplicity and symmetry."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The unending sequence of numbers where the first two numbers are 1 and 1 each succeeding term is the sum of the 2 immediately preceding:",
+        "option_1": "Geometric progression",
+        "option_2": "Harmonic series",
+        "option_3": "Harmonic progression",
+        "correct_option": "Fibonacci series",
+        "explanation": "Fibonacci sequence (1,1,2,3,5,8...) appears in biological settings and classical proportions."
+    },
+    {
+        "category": "Famous Structures",
+        "question_text": "The Empire State Building, Manhattan, New York has how many floors:",
+        "option_1": "88",
+        "option_2": "45",
+        "option_3": "178",
+        "correct_option": "102",
+        "explanation": "102 floors (1,454 ft tall), completed in 1931 as the world's tallest building until 1970."
+    },
+    {
+        "category": "Structural Systems",
+        "question_text": "Bahai Temple in Delhi is a:",
+        "option_1": "Tent structure",
+        "option_2": "Pneumatic structure",
+        "option_3": "Tensile structure",
+        "correct_option": "Shell structure",
+        "explanation": "Lotus-shaped concrete shells clad in marble, designed by Fariborz Sahba (1986)."
+    },
+    {
+        "category": "Building Calculations",
+        "question_text": "A site in a map drawn to scale of 1:16000 measures 75 sq cm. The actual area of the site in hectares is:",
+        "option_1": "120",
+        "option_2": "162",
+        "option_3": "256",
+        "correct_option": "192",
+        "explanation": "Calculation: (75 × 16000²) ÷ 10,000 = 192 hectares."
+    },
+    {
+        "category": "Environmental Planning",
+        "question_text": "Ramsar list is relate to:",
+        "option_1": "Heritage buildings",
+        "option_2": "Seismic zones",
+        "option_3": "Special economic zone",
+        "correct_option": "Wetlands",
+        "explanation": "International treaty (1971) for conservation of wetlands of international importance."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "Mahabodhi temple is built in which architectural style?",
+        "option_1": "Chola",
+        "option_2": "Pallava",
+        "option_3": "Buddhhist",
+        "correct_option": "Gupta",
+        "explanation": "Constructed in 5th century CE during Gupta period, showcasing early North Indian temple architecture."
+    },
+    {
+        "category": "Indian Architecture",
+        "question_text": "Spiral staircase is part of which stupa in Bihar?",
+        "option_1": "Shariputra Stupa",
+        "option_2": "Kesariya Stupa",
+        "option_3": "Vishwa Shanti Stupa",
+        "correct_option": "Golghar Stupa",
+        "explanation": "Golghar in Patna features a unique spiral staircase with 145 steps, built in 1786 for grain storage."
+    },
+    {
+        "category": "Structural Systems",
+        "question_text": "Which plan form is most suitable for a building located in an earthquake zone:",
+        "option_1": "Rectangular",
+        "option_2": "U-shaped",
+        "option_3": "L-shaped",
+        "correct_option": "Square",
+        "explanation": "Square plans with symmetrical load distribution perform best under seismic forces."
+    },
+    {
+        "category": "Structural Systems",
+        "question_text": "Shell structure derives its strength primarily:",
+        "option_1": "Strength of the materials",
+        "option_2": "Wall thickness",
+        "option_3": "Size",
+        "correct_option": "Shape",
+        "explanation": "Curved forms distribute stresses efficiently through their geometry rather than mass."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The quote 'Less is a bore' is attributed to this architect :",
+        "option_1": "Robert Roger",
+        "option_2": "Tadao Ando",
+        "option_3": "Philip Johnson",
+        "correct_option": "Rober Venturi",
+        "explanation": "Venturi's counter to Mies van der Rohe's 'Less is more', advocating complexity in architecture."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "According to Kevin Lynch which major elements contribute to building the imageability of a city :",
+        "option_1": "Pathways, Networks, Edges, Landmarks,Nodes",
+        "option_2": "Edges, Linkages, Landmarks, Nodes,Districts",
+        "option_3": "Morphology, Linkages, Figure-ground Nodes, Networks",
+        "correct_option": "Nodes, Pathways, Edges, Landmarks and Districts",
+        "explanation": "From Lynch's 'Image of the City' (1960) - five elements of urban legibility."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "The proportions of man is illustrated in the 'Ten Books of Architecture' written by :",
+        "option_1": "Leonordo Da Vinci",
+        "option_2": "Palladio",
+        "option_3": "Leon Battista Alberti",
+        "correct_option": "Vitruvious",
+        "explanation": "Vitruvius' 'De Architectura' (1st century BCE) inspired Da Vinci's Vitruvian Man."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "Purity of color is described by:",
+        "option_1": "Hue",
+        "option_2": "Value",
+        "option_3": "None",
+        "correct_option": "Chroma",
+        "explanation": "Chroma measures color purity (intensity/saturation) independent of hue or value."
+    },
+    {
+        "category": "Building Regulations",
+        "question_text": "Environmental (Protection) Rules 'Environmental Statement' has been in existence since :",
+        "option_1": "1992",
+        "option_2": "1993",
+        "option_3": "1994",
+        "correct_option": "1986",
+        "explanation": "Initiated after the Bhopal gas tragedy, formalized under EPA 1986."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Advocacy planning was formulated in the 1960's by:",
+        "option_1": "Peter Hall",
+        "option_2": "Melville C. Branch",
+        "option_3": "A. Faludi",
+        "correct_option": "Paul Davidoff",
+        "explanation": "Davidoff's theory emphasized pluralism and representation of marginalized groups in planning."
+    },
+    {
+        "category": "Building Regulations",
+        "question_text": "Which of the following is not a Seismic Zone now in Seismic Zones Plan of India.",
+        "option_1": "Seismic Zones - II",
+        "option_2": "Seismic Zones - III",
+        "option_3": "Seismic Zones - IV",
+        "correct_option": "Seismic Zones - I",
+        "explanation": "India's seismic zoning now uses II-V (IS 1893:2016), with Zone I removed as even stable regions have some quake risk."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "Who is the author of Geographika?",
+        "option_1": "Panini",
+        "option_2": "Varahamihira",
+        "option_3": "Sindusena",
+        "correct_option": "Ptolemy",
+        "explanation": "Claudius Ptolemy's 2nd century CE work laid foundations of cartography and geography."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Which city of the world has the oldest under ground metro system?",
+        "option_1": "Budapest",
+        "option_2": "Paris",
+        "option_3": "Chicago",
+        "correct_option": "London",
+        "explanation": "London Underground (1863) was the first, with steam locomotives on Metropolitan Railway."
+    },
+    {
+        "category": "Urban Planning",
+        "question_text": "Who is known as the 'Master builder' of mid 20th New York City?",
+        "option_1": "Jane Jacobs",
+        "option_2": "Oscar Niemeyer",
+        "option_3": "Frei Otto",
+        "correct_option": "Robert Moses",
+        "explanation": "Moses shaped NYC's infrastructure (1940s-60s) with parks, highways and public works."
+    },
+    {
+        "category": "Professional Practice",
+        "question_text": "Who is the present President of Council of Architecture?",
+        "option_1": "Habib Khan",
+        "option_2": "Udai Gadkari",
+        "option_3": "Habib Rahman",
+        "correct_option": "Abhay Vinayak Purohit",
+        "explanation": "Elected in 2021 as COA president, practicing architect from Jaipur."
+    },
+    {
+        "category": "Famous Architects",
+        "question_text": "Who is the famous architect of buildings Sagrada familia and Casa mila?",
+        "option_1": "Peter Eisenman",
+        "option_2": "Daniel Libeskind",
+        "option_3": "Santiago Calatrava",
+        "correct_option": "Antoni Gaudi",
+        "explanation": "Catalan architect (1852-1926) known for organic, modernist designs in Barcelona."
+    },
+    {
+        "category": "Architectural History",
+        "question_text": "Which of the following order is part of Roman order, but not Greek order?",
+        "option_1": "Doric",
+        "option_2": "Ionic",
+        "option_3": "Corinthian",
+        "correct_option": "Composite",
+        "explanation": "Composite order combines Ionic volutes with Corinthian acanthus leaves, developed by Romans."
+    },
+    {
+        "category": "Architectural Elements",
+        "question_text": "What does 'Cupola' Stands for in architecture?",
+        "option_1": "Arches",
+        "option_2": "Doorway",
+        "option_3": "Sanctum",
+        "correct_option": "Domes",
+        "explanation": "Small dome-like structure atop roofs, often with windows for light/ventilation."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The triad of secondary colors in the additive color system is :",
+        "option_1": "Red, Green, Blue",
+        "option_2": "Purple, Green, Orange",
+        "option_3": "Magenta, Blue, Yellow",
+        "correct_option": "Cyan, Magenta, Yellow",
+        "explanation": "CMY are secondary colors in additive RGB system, becoming primary in subtractive color."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The Golden Ratio refers to:",
+        "option_1": "1 : √2",
+        "option_2": "1:1",
+        "option_3": "16:9",
+        "correct_option": "2: (1+ √5)",
+        "explanation": "Approximately 1:1.618, found in nature and classical architecture for harmonious proportions."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "Hogarth's Line of Beauty is a ________",
+        "option_1": "Horizontal straight line",
+        "option_2": "Zigzag line",
+        "option_3": "Vertical straight line",
+        "correct_option": "Serpentine line",
+        "explanation": "S-shaped curve described in William Hogarth's 'Analysis of Beauty' (1753) as most aesthetically pleasing."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "In color wheel, Red and Blue colors are:",
+        "option_1": "Tertiary",
+        "option_2": "Complementary",
+        "option_3": "Secondary",
+        "correct_option": "Primary",
+        "explanation": "Two of the three traditional primary colors (with yellow) in subtractive color systems."
+    },
+    {
+        "category": "Design Theory",
+        "question_text": "The face of an Icosahedron is:",
+        "option_1": "Isosceles Triangle",
+        "option_2": "Square",
+        "option_3": "Pentagon",
+        "correct_option": "Equilateral Triangle",
+        "explanation": "Regular icosahedron has 20 identical equilateral triangular faces, a Platonic solid."
+    }
+]

@@ -1,69 +1,81 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.utils import timezone
 
-from .models import Question, QuestionCategory, Exam
-from .serializers import QuestionSerializer, QuestionCategorySerializer, ExamSerializer
+from .models import Question, QuestionCategory, Exam, Score
+from .serializers import (
+    QuestionSerializer,
+    QuestionCategorySerializer,
+    ExamSerializer,
+    ScoreSerializer
+)
 
-# ----------- ViewSets for CRUD -----------
+# -------------------- CRUD ViewSets --------------------
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
+
 class QuestionCategoryViewSet(viewsets.ModelViewSet):
     queryset = QuestionCategory.objects.all()
     serializer_class = QuestionCategorySerializer
+
 
 class ExamViewSet(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
 
-# ----------- Custom Quiz API Views -----------
 
+# -------------------- Custom Quiz APIs --------------------
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_questions(request):
     """
-    Returns non-repeating random questions per session.
-    Will return all remaining unseen questions first, then reset and fill the rest.
-    Repeats only after at least 10 questions served.
+    POST params:
+    {
+        "count": 5,
+        "exam": 1,        # optional
+        "category": 2    # optional
+    }
+    Returns non-repeating random questions for the session.
     """
     try:
-        count = int(request.GET.get('count', 5))
-        if count < 1:
-            count = 1
+        count = int(request.data.get('count', 5))
+        count = max(1, count)  # Ensure at least 1
     except ValueError:
         count = 5
 
-    total_questions = Question.objects.count()
-    seen_ids = request.session.get('seen_question_ids', [])
+    exam_id = request.data.get('exam')
+    category_id = request.data.get('category')
 
-    # Reset if all seen (but do this only after extracting all remaining unseen below)
+    queryset = Question.objects.all()
+
+    if exam_id:
+        queryset = queryset.filter(exam_id=exam_id)
+    if category_id:
+        queryset = queryset.filter(category_id=category_id)
+
+    total_questions = queryset.count()
+    seen_ids = request.session.get('seen_question_ids', [])
     max_unique_limit = min(10, total_questions)
 
-    # 1. Get unseen questions
-    unseen_questions = Question.objects.exclude(id__in=seen_ids)
+    unseen_questions = queryset.exclude(id__in=seen_ids)
     unseen_count = unseen_questions.count()
 
     if unseen_count >= count:
-        # Enough unseen questions
         questions = unseen_questions.order_by('?')[:count]
         seen_ids += [q.id for q in questions]
     else:
-        # 2. Take all unseen first
         questions = list(unseen_questions.order_by('?'))
-
-        # 3. Reset seen_ids, but avoid repeating just-served ones
         seen_ids = [q.id for q in questions]
 
         remaining_count = count - len(questions)
-        refill_pool = Question.objects.exclude(id__in=seen_ids).order_by('?')[:remaining_count]
-
+        refill_pool = queryset.exclude(id__in=seen_ids).order_by('?')[:remaining_count]
         questions += list(refill_pool)
         seen_ids += [q.id for q in refill_pool]
 
-    # Limit tracking to max unique count
     if len(seen_ids) > max_unique_limit:
         seen_ids = seen_ids[-max_unique_limit:]
 
@@ -73,17 +85,24 @@ def get_questions(request):
     return Response(serializer.data)
 
 
-
 @api_view(['POST'])
 def evaluate_quiz(request):
     """
-    Accepts user answers and returns score and explanations.
-    Format: { "question_1": "Option A", "question_2": "Option B" }
+    POST body example:
+    {
+        "question_1": "Option A",
+        "question_2": "Option B"
+    }
+    Optional query params: ?exam=1&category=2
+    Saves score if user is authenticated.
     """
     data = request.data
     total = 0
-    score = 0
+    correct_count = 0
     explanations = []
+
+    exam_id = request.GET.get('exam')
+    category_id = request.GET.get('category')
 
     for key, selected_option in data.items():
         if str(key).startswith("question_"):
@@ -96,7 +115,7 @@ def evaluate_quiz(request):
             total += 1
             is_correct = (selected_option == question.correct_option)
             if is_correct:
-                score += 1
+                correct_count += 1
 
             explanations.append({
                 'id': question.id,
@@ -107,8 +126,87 @@ def evaluate_quiz(request):
                 'is_correct': is_correct
             })
 
+            if not exam_id:
+                exam_id = question.exam_id
+            if not category_id:
+                category_id = question.category_id
+
+    percentage = (correct_count / total * 100) if total > 0 else 0
+    percentage = round(percentage, 2)
+
+    # Save score to DB via serializer
+    if request.user.is_authenticated and exam_id and category_id:
+        serializer = ScoreSerializer(data={
+            'exam': exam_id,
+            'category': category_id,
+            'score': percentage
+        })
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+
     return Response({
-        'score': score,
+        'score': correct_count,
         'total': total,
+        'percentage': percentage,
         'explanations': explanations
     })
+
+
+
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from .models import Score
+from .serializers import ScoreSerializer
+
+class ScoreViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Allows a logged-in user to view their quiz scores.
+    Supports list, retrieve, and custom filters.
+    """
+    serializer_class = ScoreSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Only fetch current user's scores
+        return Score.objects.filter(user=self.request.user).order_by('-created_at')
+
+    @action(detail=False, methods=['get'])
+    def by_category(self, request):
+        """
+        Filter scores by category_id
+        GET /scores/by_category/?category=1
+        """
+        category_id = request.GET.get('category')
+        qs = self.get_queryset()
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def by_exam(self, request):
+        """
+        Filter scores by exam_id
+        GET /scores/by_exam/?exam=2
+        """
+        exam_id = request.GET.get('exam')
+        qs = self.get_queryset()
+        if exam_id:
+            qs = qs.filter(exam_id=exam_id)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def datewise(self, request):
+        """
+        Get scores between two dates
+        GET /scores/datewise/?start=2025-08-01&end=2025-08-10
+        """
+        start_date = request.GET.get('start')
+        end_date = request.GET.get('end')
+        qs = self.get_queryset()
+        if start_date and end_date:
+            qs = qs.filter(created_at__date__range=[start_date, end_date])
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)

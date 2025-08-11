@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Question, Exam, QuestionCategory
+from .models import Question, Exam, QuestionCategory, Score
+
 
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
@@ -20,10 +21,10 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ['exam', 'category']
     ordering = ['exam', 'category']
 
-    # Remove this method to allow "+" add buttons
-    # def get_form(self, request, obj=None, **kwargs):
-    #     form = super().get_form(request, obj, **kwargs)
-    #     for field in ['exam', 'category']:
-    #         if field in form.base_fields:
-    #             form.base_fields[field].widget.can_add_related = False
-    #     return form
+
+@admin.register(Score)
+class ScoreAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'exam', 'category', 'score', 'date']
+    search_fields = ['user__username', 'exam__name', 'category__name']
+    list_filter = ['exam', 'category', 'date']
+    ordering = ['-date']

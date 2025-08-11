@@ -1,7 +1,7 @@
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from django.utils import timezone
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view, action
+from rest_framework.response import Response
 
 from .models import Question, QuestionCategory, Exam, Score
 from .serializers import (
@@ -37,21 +37,20 @@ def get_questions(request):
     {
         "count": 5,
         "exam": 1,        # optional
-        "category": 2    # optional
+        "category": 2     # optional
     }
     Returns non-repeating random questions for the session.
     """
     try:
         count = int(request.data.get('count', 5))
         count = max(1, count)  # Ensure at least 1
-    except ValueError:
+    except (ValueError, TypeError):
         count = 5
 
     exam_id = request.data.get('exam')
     category_id = request.data.get('category')
 
     queryset = Question.objects.all()
-
     if exam_id:
         queryset = queryset.filter(exam_id=exam_id)
     if category_id:
@@ -70,7 +69,6 @@ def get_questions(request):
     else:
         questions = list(unseen_questions.order_by('?'))
         seen_ids = [q.id for q in questions]
-
         remaining_count = count - len(questions)
         refill_pool = queryset.exclude(id__in=seen_ids).order_by('?')[:remaining_count]
         questions += list(refill_pool)
@@ -152,12 +150,7 @@ def evaluate_quiz(request):
     })
 
 
-
-from rest_framework import viewsets, permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from .models import Score
-from .serializers import ScoreSerializer
+# -------------------- Score ViewSet --------------------
 
 class ScoreViewSet(viewsets.ReadOnlyModelViewSet):
     """

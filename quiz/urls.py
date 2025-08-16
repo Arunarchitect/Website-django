@@ -6,6 +6,7 @@ from .views import (
     ExamViewSet,
     get_questions,
     evaluate_quiz,
+    get_exam_categories,
     ScoreViewSet
 )
 
@@ -19,6 +20,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('get-quiz/', get_questions, name='get_quiz'),
     path('evaluate/', evaluate_quiz, name='evaluate_quiz'),
+    path('exam-categories/<int:exam_id>/', get_exam_categories, name='exam-categories'),
 ]
 
 

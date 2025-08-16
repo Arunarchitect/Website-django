@@ -36,8 +36,8 @@ class Question(models.Model):
 
 class Score(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    category = models.ForeignKey(QuestionCategory, on_delete=models.CASCADE)
+    exam = models.ForeignKey('Exam', on_delete=models.CASCADE, null=True, blank=True)
+    category = models.ForeignKey('QuestionCategory', on_delete=models.CASCADE, null=True, blank=True)
     
     score = models.DecimalField(max_digits=5, decimal_places=2)  # e.g. 99.99%
     date = models.DateTimeField(default=timezone.now)  # Automatically records when entry is created
@@ -48,4 +48,6 @@ class Score(models.Model):
         ordering = ["-date"]  # Most recent scores first
 
     def __str__(self):
-        return f"{self.user} - {self.exam} - {self.category} : {self.score}%"
+        exam_name = self.exam.name if self.exam else "All Exams"
+        category_name = self.category.name if self.category else "All Categories"
+        return f"{self.user} - {exam_name} - {category_name} : {self.score}%"

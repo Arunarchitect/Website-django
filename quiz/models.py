@@ -26,6 +26,10 @@ class Question(models.Model):
     correct_option = models.CharField(max_length=255)
 
     explanation = models.TextField(blank=True, null=True)
+    
+    # Add these new fields with auto_now_add and auto_now
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 👈 Correctly added
 

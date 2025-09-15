@@ -1,0 +1,3 @@
+Create docs.txt to see how rsync works
+wsl --install     (this is to make rsync work in windows)
+rsync -avz root@vps-ip:/var/www/modelflick/media/ /mnt/c/Users/arunm/Desktop/Website-django/media/

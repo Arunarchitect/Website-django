@@ -1,5 +1,3 @@
-
-
 server {
     listen 443 ssl;
     server_name api.modelflick.com www.api.modelflick.com;
@@ -23,7 +21,20 @@ server {
     location /media/ {
     alias /var/www/modelflick/media/;
     autoindex on;
+
+    set $cors_origin "";
+
+    if ($http_origin = "https://modelflick.com") {
+        set $cors_origin $http_origin;
     }
+    if ($http_origin = "https://www.modelflick.com") {
+        set $cors_origin $http_origin;
+    }
+
+    add_header Access-Control-Allow-Origin $cors_origin;
+    add_header Vary Origin;
+    }
+
 
 
     error_page 404 /404.html;
@@ -36,6 +47,3 @@ server {
         root /usr/share/nginx/html;
     }
 }
-
-
-

@@ -8,7 +8,7 @@ services:
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - ./media:/app/media   # <-- Change this line from media_volume to bind mount
     env_file:
       - .env
     environment:
@@ -20,6 +20,4 @@ services:
 
 volumes:
   static_volume:
-  media_volume:
-
-# docker-compose -f docker-compose.dev.yml up  --build
+  media_volume:   # you can delete this since you are not using it now

@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/', include('project.urls')),         # Project-specific non-ViewSet endpoints
     path('api/', include('quiz.urls')),         # Project-specific non-ViewSet endpoints
     path('api/', include(router.urls)),             # REST API for projects, worklogs, deliverables
+    path('api/viewer/', include('viewer.urls')),
 ]
 
 if settings.DEBUG:

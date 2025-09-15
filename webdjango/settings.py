@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'expense',
     'users',
     'quiz',
+    'viewer',
 
     # packages
     'rest_framework',

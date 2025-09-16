@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
       - /var/www/modelflick/static:/var/www/modelflick/static
-      - /var/www/modelflick/media:/app/media   # <-- add this line
+      - ./media:/app/media
       - /tmp:/tmp
     env_file:
       - .env  # Load environment variables from .env file

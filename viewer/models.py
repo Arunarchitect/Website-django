@@ -89,7 +89,8 @@ class ProjectAccessKey(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = ('organisation', 'project')
+        unique_together = ()
+        # for org and project only have 1 access ke use this --- unique_together = ('organisation', 'project')
 
     def __str__(self):
         return f"{self.organisation.name} - {self.project.name} ({self.access_key})"

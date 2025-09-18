@@ -1,5 +1,6 @@
 import os
 import uuid
+import re
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_delete
@@ -11,17 +12,12 @@ from .validators import validate_360_image
 User = get_user_model()
 
 
-# --- CUSTOM UPLOAD FUNCTION (forces overwrite by reusing filename) ---
-def overwrite_file(instance, filename):
-    upload_path = os.path.join("viewer/360_images", filename)
-
-    full_path = os.path.join(models.ImageField().storage.location, upload_path)
-
-    # If file already exists → remove it before saving new one
-    if os.path.exists(full_path):
-        os.remove(full_path)
-
-    return upload_path
+# --- CUSTOM UPLOAD FUNCTION (original filename + UUID) ---
+def unique_filename(instance, filename):
+    base, ext = os.path.splitext(filename)  # split name and extension
+    base = re.sub(r'[^a-zA-Z0-9_-]', '', base)  # clean up invalid chars
+    new_filename = f"{base}_{uuid.uuid4().hex}{ext}"
+    return os.path.join("viewer/360_images", new_filename)
 
 
 class Viewer(models.Model):
@@ -45,7 +41,7 @@ class Viewer(models.Model):
     view_date = models.DateField()
 
     image_360 = models.ImageField(
-        upload_to=overwrite_file,
+        upload_to=unique_filename,
         validators=[validate_360_image],
     )
 
@@ -79,6 +75,7 @@ def delete_file_on_instance_delete(sender, instance, **kwargs):
         instance.image_360.delete(save=False)
 
 
+
 class ProjectAccessKey(models.Model):
     organisation = models.ForeignKey(
         Organisation,
@@ -104,8 +101,7 @@ class ProjectAccessKey(models.Model):
 
     class Meta:
         unique_together = ()
-        # for org and project only have 1 access key use this:
-        # unique_together = ('organisation', 'project')
+        # for org and project only have 1 access ke use this --- unique_together = ('organisation', 'project')
 
     def __str__(self):
         return f"{self.organisation.name} - {self.project.name} ({self.access_key})"

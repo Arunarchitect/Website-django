@@ -21,3 +21,6 @@ services:
 volumes:
   static_volume:
   media_volume:   # you can delete this since you are not using it now
+
+
+  # docker-compose -f docker-compose.dev.yml up --build -d

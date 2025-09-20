@@ -19,6 +19,12 @@ def unique_filename(instance, filename):
     new_filename = f"{base}_{uuid.uuid4().hex}{ext}"
     return os.path.join("viewer/360_images", new_filename)
 
+def svg_file_upload(instance, filename):
+    base, ext = os.path.splitext(filename)
+    base = re.sub(r'[^a-zA-Z0-9_-]', '', base)
+    new_filename = f"{base}_{uuid.uuid4().hex}{ext}"
+    return os.path.join("viewer/svg_files", new_filename)
+
 
 class Viewer(models.Model):
     user = models.ForeignKey(
@@ -105,3 +111,90 @@ class ProjectAccessKey(models.Model):
 
     def __str__(self):
         return f"{self.organisation.name} - {self.project.name} ({self.access_key})"
+    
+    
+    # --- TAG MODEL ---
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name='tags'
+    )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='tags'
+    )
+    
+    class Meta:
+        unique_together = ('name', 'organisation', 'project')
+    
+    def __str__(self):
+        return f"{self.name} ({self.project.name})"
+    
+    # --- SVG FILE MODEL ---
+class ViewerFile(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='viewer_files'
+    )
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name='viewer_files'
+    )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='viewer_files'
+    )
+
+    view_name = models.CharField(max_length=255)
+    view_date = models.DateField()
+
+    file = models.FileField(
+        upload_to=svg_file_upload,
+        help_text="SVG file for viewing"
+    )
+    description = models.TextField(blank=True, null=True)
+
+    tags = models.ManyToManyField(
+        Tag,
+        blank=True,
+        related_name='viewer_files'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-view_date']
+
+    def __str__(self):
+        return f"{self.project.name} - {self.view_name} ({self.view_date})"
+
+    def save(self, *args, **kwargs):
+        """Delete old file when updating with a new one."""
+        if self.pk:
+            try:
+                old_file = ViewerFile.objects.get(pk=self.pk).file
+            except ViewerFile.DoesNotExist:
+                old_file = None
+
+            new_file = self.file
+            if old_file and old_file != new_file:
+                old_file.delete(save=False)
+
+        super().save(*args, **kwargs)
+
+    @property
+    def tag_names(self):
+        """Return list of tag names for API responses."""
+        return list(self.tags.values_list('name', flat=True))
+    
+# --- CLEANUP HANDLERS ---
+@receiver(post_delete, sender=ViewerFile)
+def delete_viewerfile_file_on_delete(sender, instance, **kwargs):
+    if instance.file:
+        instance.file.delete(save=False)
